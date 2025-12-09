@@ -30,7 +30,8 @@ module.exports = {
     babel({
       extensions: [".js", ".mjs", ".svelte"],
       babelHelpers: "runtime",
-      include: ["src/**", "node_modules/svelte/**"],
+      // include: ["src/**", "node_modules/svelte/**"],
+      include: ["node_modules/svelte/**"],
     }),
 
     resolve({
