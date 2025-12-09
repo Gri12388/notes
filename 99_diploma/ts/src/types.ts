@@ -7,6 +7,11 @@ export type Creds = {
   password: string;
 };
 
+export type Session = {
+  user: string;
+  expire: number;
+};
+
 export type Dictionary<T> = {
   name: string;
   value: T;

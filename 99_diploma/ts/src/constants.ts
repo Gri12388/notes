@@ -5,6 +5,7 @@ export const PROTOCOL = process.env.PROTOCOL || "http";
 export const PORT = process.env.PORT || 3000;
 export const ORIGIN = `${PROTOCOL}://${HOST}:${PORT}`;
 export const CONNECTION_STRING = process.env.CONNECTION_STRING;
+export const NOTHING = "";
 
 export const NOT_FOUND = 0;
 export const TECH_ERROR = 1;
@@ -17,14 +18,25 @@ export const COLLECTIONS = {
 } as const;
 
 export const ROUTES = {
-  auth: "/",
+  root: "/",
+  dashboard: "/dashboard",
+} as const;
+
+export const ENDPOINTS = {
+  login: "/login",
+  signup: "/signup",
+} as const;
+
+export const COOKIES = {
+  sessionId: "sessionId",
 } as const;
 
 export const ERRORS = {
   noCredentials: "There is neither login nor password",
   somethingWrong: "Something went wrong",
   userExists: "The user exists already",
-};
+  wrongCreds: "There is wrong credentials",
+} as const;
 
 export const SEARCHES = {
   authError: "authError",
