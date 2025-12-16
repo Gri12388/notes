@@ -2,9 +2,12 @@ import express from "express";
 
 import cookieParser from "cookie-parser";
 import nunjucks from "nunjucks";
-import { ORIGIN, PORT, ROUTES } from "./src/constants.js";
+import { COLLECTIONS, DATABASE, ORIGIN, PORT, ROUTES, USER } from "./src/constants.js";
 import { rootRouter } from "./src/routes/root.js";
 import { dashboardRouter } from "./src/routes/dashboard.js";
+import { DB } from "./src/classes/DB.js";
+import { getCollection } from "./src/fns/common.js";
+import { setIndex } from "./src/fns/db.js";
 
 const app = express();
 
@@ -20,6 +23,10 @@ app.use(cookieParser());
 app.use(ROUTES.dashboard, dashboardRouter);
 app.use(ROUTES.root, rootRouter);
 
-app.listen(PORT, () => {
-  console.log(`Listening on ${ORIGIN}`);
+app.listen(PORT, async () => {
+  const isCredsOk = await setIndex(COLLECTIONS.creds, USER);
+  const isSessionsOk = await setIndex(COLLECTIONS.sessions, USER);
+
+  if (isCredsOk && isSessionsOk) console.log(`Listening on ${ORIGIN}`);
+  else process.exit(1);
 });

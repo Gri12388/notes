@@ -1,6 +1,7 @@
-import type { NOT_FOUND, TECH_ERROR } from "./constants.js";
+import type { COLLECTIONS, NOT_FOUND, NOT_UNIQUE_TYPES, TECH_ERROR } from "./constants.js";
 
 export type FindResult<T> = { found: T } | typeof NOT_FOUND | typeof TECH_ERROR;
+export type CollectionName = typeof COLLECTIONS.creds | typeof COLLECTIONS.sessions;
 
 export type Creds = {
   login: string;
@@ -22,3 +23,5 @@ export type UrlOptions = {
   path: string;
   search: Dictionary<string>[];
 };
+
+export type NotUnique = typeof NOT_UNIQUE_TYPES.session | typeof NOT_UNIQUE_TYPES.user;

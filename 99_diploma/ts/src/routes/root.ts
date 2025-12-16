@@ -1,18 +1,30 @@
 import bodyParser from "body-parser";
 import express from "express";
-import { ENDPOINTS, NOT_FOUND, ORIGIN, ROUTES, TECH_ERROR } from "../constants.js";
+import {
+  COOKIES,
+  ENDPOINTS,
+  NOT_FOUND,
+  NOT_UNIQUE,
+  NOT_UNIQUE_TYPES,
+  NOTHING,
+  ORIGIN,
+  ROUTES,
+  TECH_ERROR,
+} from "../constants.js";
 import type { Session } from "../types.js";
 import ms from "ms";
 import { getCreds, getUrl, hashText } from "../fns/common.js";
-import { createSession, findPassword, findUser, setCredential } from "../fns/db.js";
+import { createSession, deleteSession, findPassword, findUser, setCredential } from "../fns/db.js";
 import {
   handleCredsSet,
   handleLogin,
   handleNoCredentials,
+  handleNotUnique,
   handleSomthingWentWrong,
   handleUserExists,
   handleWrongCreds,
 } from "../fns/handlers.js";
+import { getStringOrUdf } from "../fns/checkers.js";
 
 export const rootRouter = express.Router();
 
@@ -24,6 +36,23 @@ rootRouter.get(ROUTES.root, (req, res) => {
   } else {
     const { authError, success } = req.query;
     res.render("index", { index: { authError, success } });
+  }
+});
+
+rootRouter.get(ENDPOINTS.logout, async (req, res) => {
+  const { cookies } = req;
+
+  if (cookies && cookies.sessionId) {
+    const sessionId = getStringOrUdf(cookies.sessionId);
+    if (sessionId) {
+      const isDeleted = await deleteSession(sessionId);
+      if (isDeleted) {
+        res
+          .status(307)
+          .clearCookie(COOKIES.sessionId)
+          .redirect(getUrl({ origin: ORIGIN, path: ROUTES.root, search: [] }).toString());
+      }
+    }
   }
 });
 
@@ -51,7 +80,8 @@ rootRouter.post(ENDPOINTS.login, bodyParser.urlencoded({ extended: true }), asyn
             expire: Date.now() + ms("1d"),
           };
           const id = await createSession(session);
-          id ? handleLogin(res, id) : handleSomthingWentWrong(res);
+          if (id) handleLogin(res, id);
+          else handleSomthingWentWrong(res);
         } else handleWrongCreds(res);
     }
   } else handleNoCredentials(res);
@@ -67,7 +97,18 @@ rootRouter.post(ENDPOINTS.signup, bodyParser.urlencoded({ extended: true }), asy
       case NOT_FOUND:
         const hash = hashText(password);
         const isSet = await setCredential(login, hash);
-        isSet ? handleCredsSet(res) : handleSomthingWentWrong(res);
+        switch (isSet) {
+          case NOTHING:
+            handleSomthingWentWrong(res);
+            break;
+
+          case NOT_UNIQUE:
+            handleNotUnique(res, NOT_UNIQUE_TYPES.user);
+            break;
+
+          default:
+            handleCredsSet(res);
+        }
         break;
 
       case TECH_ERROR:
