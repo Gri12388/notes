@@ -16,7 +16,7 @@ module.exports = {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "public/bundle.js",
+    file: "public/bundle.cjs",
   },
   plugins: [
     svelte({

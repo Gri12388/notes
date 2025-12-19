@@ -2,13 +2,13 @@ import { MongoError, ObjectId, type Document, type WithId } from "mongodb";
 import type { CollectionName, FindResult, Session } from "../types.js";
 import { COLLECTIONS, DATABASE, NOT_FOUND, NOT_UNIQUE, NOTHING, TECH_ERROR, USER } from "../constants.js";
 import { getCollection } from "./common.js";
-import { DB } from "../classes/DB.js";
+import { Mongo } from "../classes/Mongo.js";
 import { getPasswordOrUdf, getSessionOrUdf } from "./checkers.js";
 
 export const deleteSession = async (sessionId: string) => {
   let result = false;
 
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const id = new ObjectId(sessionId);
@@ -28,7 +28,7 @@ export const deleteSession = async (sessionId: string) => {
 export const setCredential = async (login: string, password: string) => {
   let result = NOTHING;
 
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const collection = await getCollection(mongo, DATABASE, COLLECTIONS.creds);
@@ -52,7 +52,7 @@ export const setCredential = async (login: string, password: string) => {
 export const findPassword = async (user: string) => {
   let result: FindResult<string> = NOT_FOUND;
 
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const collection = await getCollection(mongo, DATABASE, COLLECTIONS.creds);
@@ -74,7 +74,7 @@ export const findPassword = async (user: string) => {
 export const findSession = async (sessionId: string) => {
   let result: FindResult<Session> = NOT_FOUND;
 
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const id = new ObjectId(sessionId);
@@ -97,7 +97,7 @@ export const findSession = async (sessionId: string) => {
 export const findUser = async (user: string) => {
   let result: FindResult<WithId<Document>> = NOT_FOUND;
 
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const collection = await getCollection(mongo, DATABASE, COLLECTIONS.creds);
@@ -116,7 +116,7 @@ export const findUser = async (user: string) => {
 export const createSession = async (session: Session) => {
   let result = NOTHING;
 
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const collection = await getCollection(mongo, DATABASE, COLLECTIONS.sessions);
@@ -132,32 +132,9 @@ export const createSession = async (session: Session) => {
   return result;
 };
 
-// export const createSession = async (session: Session) => {
-//   let result = NOTHING;
-
-//   const mongo = DB.getInstance().getMongo();
-//   if (mongo) {
-//     try {
-//       const collection = await getCollection(mongo, DATABASE, COLLECTIONS.sessions);
-//       const { insertedId } = await collection.insertOne(session);
-//       result = insertedId.toString();
-//     } catch (error) {
-//       if (error instanceof MongoError && error.code && error.code.toString() === NOT_UNIQUE) {
-//         result = NOT_UNIQUE;
-//       } else {
-//         result = NOTHING;
-//       }
-//     } finally {
-//       await mongo.close();
-//     }
-//   }
-
-//   return result;
-// };
-
 export const setIndex = async (collectionName: CollectionName, indexName: string) => {
   let result = false;
-  const mongo = DB.getInstance().getMongo();
+  const mongo = Mongo.getInstance().getMongo();
   if (mongo) {
     try {
       const client = await mongo.connect();

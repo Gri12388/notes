@@ -3,18 +3,20 @@ import express from "express";
 import {
   COOKIES,
   ENDPOINTS,
+  NO_ONE,
   NOT_FOUND,
   NOT_UNIQUE,
   NOT_UNIQUE_TYPES,
   NOTHING,
   ORIGIN,
   ROUTES,
+  SESSIONS_TIME,
   TECH_ERROR,
 } from "../constants.js";
 import type { Session } from "../types.js";
 import ms from "ms";
 import { getCreds, getUrl, hashText } from "../fns/common.js";
-import { createSession, deleteSession, findPassword, findUser, setCredential } from "../fns/db.js";
+import { createSession, deleteSession, findPassword, findSession, findUser, setCredential } from "../fns/db.js";
 import {
   handleCredsSet,
   handleLogin,
@@ -28,11 +30,39 @@ import { getStringOrUdf } from "../fns/checkers.js";
 
 export const rootRouter = express.Router();
 
-rootRouter.get(ROUTES.root, (req, res) => {
+rootRouter.get(ROUTES.root, async (req, res) => {
   const { cookies } = req;
 
   if (cookies && cookies.sessionId) {
-    res.status(307).redirect(getUrl({ origin: ORIGIN, path: ROUTES.dashboard, search: [] }).toString());
+    const { sessionId } = cookies;
+    const session = await findSession(sessionId);
+    switch (session) {
+      case NOT_FOUND:
+        res.clearCookie(COOKIES.sessionId);
+        handleSomthingWentWrong(res);
+        break;
+
+      case TECH_ERROR:
+        res.clearCookie(COOKIES.sessionId);
+        handleSomthingWentWrong(res);
+        break;
+
+      default:
+        const { expire } = session.found;
+        const now = Date.now();
+        const isEspired = now > expire;
+        if (isEspired) {
+          SESSIONS_TIME[sessionId] = NO_ONE;
+          await deleteSession(sessionId);
+          res
+            .status(307)
+            .clearCookie(COOKIES.sessionId)
+            .redirect(getUrl({ origin: ORIGIN, path: ROUTES.root, search: [] }).toString());
+        } else {
+          SESSIONS_TIME[sessionId] = expire;
+          res.render("dashboard");
+        }
+    }
   } else {
     const { authError, success } = req.query;
     res.render("index", { index: { authError, success } });

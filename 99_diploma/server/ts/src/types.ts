@@ -25,3 +25,11 @@ export type UrlOptions = {
 };
 
 export type NotUnique = typeof NOT_UNIQUE_TYPES.session | typeof NOT_UNIQUE_TYPES.user;
+
+export type Note = {
+  user: string;
+  title: string;
+  text: string;
+  createdAt: number;
+  editedAt: number;
+};

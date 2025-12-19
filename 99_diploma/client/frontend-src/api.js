@@ -1,4 +1,4 @@
-const PREFIX = "???";
+const PREFIX = "/api";
 
 const req = (url, options = {}) => {
   const { body } = options;
@@ -19,11 +19,19 @@ const req = (url, options = {}) => {
       ? res.json()
       : res.text().then((message) => {
           throw new Error(message);
-        })
+        }),
   );
 };
 
-export const getNotes = ({ age, search, page } = {}) => {};
+export const getNotes = ({ age, search, page } = {}) =>
+  req("/notes", {
+    method: "POST",
+    body: {
+      age,
+      search,
+      page,
+    },
+  });
 
 export const createNote = (title, text) => {};
 

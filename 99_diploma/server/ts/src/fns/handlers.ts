@@ -71,7 +71,7 @@ export const handleLogin = async (res: Response, sessionId: string) => {
     .redirect(
       getUrl({
         origin: ORIGIN,
-        path: ROUTES.dashboard,
+        path: ROUTES.api,
         search: [],
       }).toString(),
     );
