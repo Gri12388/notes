@@ -132,7 +132,7 @@ export const createSession = async (session: Session) => {
   return result;
 };
 
-export const setIndex = async (collectionName: CollectionName, indexName: string) => {
+export const configCollection = async (collectionName: CollectionName, indexName: string) => {
   let result = false;
   const mongo = Mongo.getInstance().getMongo();
   if (mongo) {

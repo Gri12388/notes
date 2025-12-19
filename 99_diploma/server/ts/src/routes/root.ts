@@ -16,7 +16,7 @@ import {
 import type { Session } from "../types.js";
 import ms from "ms";
 import { getCreds, getUrl, hashText } from "../fns/common.js";
-import { createSession, deleteSession, findPassword, findSession, findUser, setCredential } from "../fns/db.js";
+import { createSession, deleteSession, findPassword, findSession, findUser, setCredential } from "../fns/mongo.js";
 import {
   handleCredsSet,
   handleLogin,

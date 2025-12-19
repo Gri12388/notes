@@ -1,8 +1,8 @@
 import express from "express";
-import { COOKIES, ENDPOINTS, NO_ONE, NOT_FOUND, ORIGIN, ROUTES, SESSIONS_TIME, TECH_ERROR } from "../constants.js";
+import { COOKIES, ENDPOINTS, NO_ONE, ORIGIN, ROUTES, SESSIONS_TIME } from "../constants.js";
 import { getStringOrUdf } from "../fns/checkers.js";
 import { getUrl } from "../fns/common.js";
-import { deleteSession } from "../fns/db.js";
+import { deleteSession } from "../fns/mongo.js";
 
 export const apiRouter = express.Router();
 
