@@ -33,7 +33,14 @@ export const getNotes = ({ age, search, page } = {}) =>
     },
   });
 
-export const createNote = (title, text) => {};
+export const createNote = (title, text) =>
+  req("/create", {
+    method: "POST",
+    body: {
+      title,
+      text,
+    },
+  });
 
 export const getNote = (id) => {};
 

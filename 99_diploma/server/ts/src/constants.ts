@@ -50,6 +50,7 @@ export const ROUTES = {
 } as const;
 
 export const ENDPOINTS = {
+  create: "/create",
   login: "/login",
   logout: "/logout",
   notes: "/notes",
