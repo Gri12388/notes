@@ -3,7 +3,7 @@ import type { CollectionName, FindResult, Session } from "../types.js";
 import { COLLECTIONS, DATABASE, NOT_FOUND, NOT_UNIQUE, NOTHING, TECH_ERROR, USER } from "../constants.js";
 import { getCollection } from "./common.js";
 import { Mongo } from "../classes/Mongo.js";
-import { getPasswordOrUdf, getSessionOrUdf } from "./checkers.js";
+import { getPasswordOrUdf, getSessionOrUdf, getStringOrUdf } from "./checkers.js";
 
 export const deleteSession = async (sessionId: string) => {
   let result = false;
@@ -103,6 +103,29 @@ export const findUser = async (user: string) => {
       const collection = await getCollection(mongo, DATABASE, COLLECTIONS.creds);
       const document = await collection.findOne({ user });
       if (document) result = { found: document };
+    } catch (error) {
+      result = TECH_ERROR;
+    } finally {
+      await mongo.close();
+    }
+  }
+
+  return result;
+};
+
+export const findUserName = async (sessionId: string) => {
+  let result: FindResult<string> = NOT_FOUND;
+
+  const mongo = Mongo.getInstance().getMongo();
+  if (mongo) {
+    try {
+      const id = new ObjectId(sessionId);
+      const collection = await getCollection(mongo, DATABASE, COLLECTIONS.sessions);
+      const document = await collection.findOne({ _id: id }, { projection: { user: 1, _id: 0 } });
+      if (document) {
+        const userName = getStringOrUdf(document.user);
+        result = userName ? { found: userName } : TECH_ERROR;
+      }
     } catch (error) {
       result = TECH_ERROR;
     } finally {

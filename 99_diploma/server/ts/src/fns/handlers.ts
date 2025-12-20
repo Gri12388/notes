@@ -1,8 +1,9 @@
 import type { Response } from "express";
-import { COOKIES, ERRORS, ORIGIN, ROUTES, SEARCHES } from "../constants.js";
+import { COOKIES, ERRORS, NO_ONE, ORIGIN, ROUTES, SEARCHES, SESSIONS_TIME } from "../constants.js";
 import { locale } from "../locale.js";
 import { getUrl } from "./common.js";
 import type { NotUnique } from "../types.js";
+import { deleteSession } from "./mongo.js";
 
 export const handleNoCredentials = (res: Response) => {
   res.status(307).redirect(
@@ -71,8 +72,25 @@ export const handleLogin = async (res: Response, sessionId: string) => {
     .redirect(
       getUrl({
         origin: ORIGIN,
-        path: ROUTES.api,
+        path: ROUTES.root,
         search: [],
       }).toString(),
     );
+};
+
+export const handleExpire = async (res: Response, sessionId: string) => {
+  SESSIONS_TIME[sessionId] = NO_ONE;
+  await deleteSession(sessionId);
+  res
+    .status(307)
+    .clearCookie(COOKIES.sessionId)
+    .redirect(getUrl({ origin: ORIGIN, path: ROUTES.root, search: [] }).toString());
+};
+
+export const handleUserNotFound = async (res: Response) => {
+  res.status(404).send(ERRORS.userNotFound);
+};
+
+export const handleTechError = async (res: Response) => {
+  res.status(500).send(ERRORS.somethingWrong);
 };

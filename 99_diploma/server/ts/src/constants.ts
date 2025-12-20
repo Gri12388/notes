@@ -11,6 +11,7 @@ export const PGHOST = process.env.PGHOST;
 export const PGDATABASE = process.env.PGDATABASE;
 export const PGUSER = process.env.PGUSER;
 export const PGPASSWORD = process.env.PGPASSWORD;
+export const LIMIT = 10;
 export const NOTHING = "";
 export const NO_ONE = -1;
 export const NOT_UNIQUE = "11000";
@@ -29,6 +30,14 @@ export const PGCONFIG = {
   password: PGPASSWORD,
   ssl: true,
 };
+
+export const SCHEMA = {
+  public: "public",
+} as const;
+
+export const TABLES = {
+  notes: "notes",
+} as const;
 
 export const COLLECTIONS = {
   creds: "creds",
@@ -52,10 +61,12 @@ export const COOKIES = {
 } as const;
 
 export const ERRORS = {
+  badRequest: "Bad request",
   noCredentials: "There is neither login nor password",
   notUnique: (type: NotUnique) => `${type} is exists already`,
   somethingWrong: "Something went wrong",
   userExists: "The user exists already",
+  userNotFound: "The user is not found",
   wrongCreds: "There is wrong credentials",
 } as const;
 
@@ -70,3 +81,12 @@ export const NOT_UNIQUE_TYPES = {
 } as const;
 
 export const SESSIONS_TIME: Record<string, number> = {};
+
+export const OFFSETS: Record<string, number> = {};
+
+export const AGE = {
+  allTime: "alltime",
+  archive: "archive",
+  oneMonth: "1month",
+  threeMonth: "3month",
+} as const;

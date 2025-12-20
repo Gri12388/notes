@@ -1,4 +1,5 @@
-import type { Session } from "../types.js";
+import { AGE } from "../constants.js";
+import type { NoteLite, NotesPayload, Session } from "../types.js";
 
 export const getStringOrUdf = (value: any) => (typeof value === "string" ? value : undefined);
 export const getNumberOrUdf = (value: any) => (typeof value === "number" ? value : undefined);
@@ -44,3 +45,51 @@ export const getSessionOrUdf = (value: unknown) => {
 
   return result;
 };
+
+export const getAgeOrUdf = (value: any) => {
+  switch (value) {
+    case AGE.allTime:
+      return AGE.allTime;
+
+    case AGE.archive:
+      return AGE.archive;
+
+    case AGE.oneMonth:
+      return AGE.oneMonth;
+
+    case AGE.threeMonth:
+      return AGE.threeMonth;
+
+    default:
+      return undefined;
+  }
+};
+
+export const getNotesPayloadOrUdf = (value: any) => {
+  let result: NotesPayload | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const age = "age" in value ? getAgeOrUdf(value.age) : undefined;
+    const search = "search" in value ? getStringOrUdf(value.search) : undefined;
+    const page = "page" in value ? getNumberOrUdf(value.page) : undefined;
+
+    result = { age: age ?? AGE.allTime, search: search ?? "", page: page ?? 1 };
+  }
+
+  return result;
+};
+
+export const getNoteLiteOrUdf = (value: any) => {
+  let result: NoteLite | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const title = "title" in value ? getStringOrUdf(value.title) : undefined;
+    const text = "text" in value ? getStringOrUdf(value.text) : undefined;
+
+    if (title !== undefined && text !== undefined) result = { title, text };
+  }
+
+  return result;
+};
+
+export const getNotesLite = (value: any) => getArray(value, getNoteLiteOrUdf);

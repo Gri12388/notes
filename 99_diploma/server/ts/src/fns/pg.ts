@@ -1,4 +1,8 @@
 import { Pg } from "../classes/Pg.js";
+import { LIMIT, SCHEMA, TABLES } from "../constants.js";
+import type { NoteLite, NotesPayload } from "../types.js";
+import { getNotesLite } from "./checkers.js";
+import { getAgeData, getOffset } from "./common.js";
 
 export const configTable = async () => {
   let result = false;
@@ -6,11 +10,11 @@ export const configTable = async () => {
   try {
     const db = Pg.getInstance().getPg();
 
-    const isNodes = await db.schema.withSchema("public").hasTable("nodes");
+    const isNodes = await db.schema.withSchema(SCHEMA.public).hasTable(TABLES.notes);
 
     if (isNodes) result = true;
     else {
-      await db.schema.withSchema("public").createTable("nodes", (table) => {
+      await db.schema.withSchema(SCHEMA.public).createTable(TABLES.notes, (table) => {
         table.increments("id").primary();
         table.string("user").notNullable();
         table.string("title").notNullable();
@@ -24,6 +28,35 @@ export const configTable = async () => {
     }
   } catch (error) {
     console.error(`[error]: ${error}`);
+  }
+
+  return result;
+};
+
+export const getNotes = async (payload: NotesPayload, userName: string) => {
+  let result: NoteLite[] | undefined;
+  try {
+    const db = Pg.getInstance().getPg();
+
+    const { age, page, search } = payload;
+
+    const { isArchive, timestamp } = getAgeData(age);
+    const offset = getOffset(page);
+    const sql = db(TABLES.notes)
+      .withSchema(SCHEMA.public)
+      .select("title", "text")
+      .where("user", userName)
+      .andWhere("is_archive", isArchive)
+      .andWhere("created_at", "<", timestamp);
+
+    if (search) {
+      sql.andWhere("title", "ilike", `%${search}%`).orWhere("text", "ilike", `%${search}%`);
+    }
+
+    const rows = await sql.offset(offset).limit(LIMIT + 1);
+    result = getNotesLite(rows);
+  } catch (error) {
+    console.log("[error]", error);
   }
 
   return result;

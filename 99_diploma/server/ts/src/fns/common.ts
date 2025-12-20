@@ -1,7 +1,9 @@
 import { createHash } from "crypto";
+import { subMonths } from "date-fns";
 import type { MongoClient } from "mongodb";
-import type { Creds, UrlOptions } from "../types.js";
+import type { Age, AgeData, Creds, UrlOptions } from "../types.js";
 import { getRecordOrUdf, getStringOrUdf } from "./checkers.js";
+import { AGE } from "../constants.js";
 
 export const getCollection = async (mongo: MongoClient, dbName: string, collectionName: string) => {
   const client = await mongo.connect();
@@ -39,4 +41,35 @@ export const getUrl = (options: UrlOptions) => {
   });
 
   return url;
+};
+
+export const getAgeData = (age: Age) => {
+  let result: AgeData = {
+    isArchive: false,
+    timestamp: 0,
+  };
+
+  switch (age) {
+    case AGE.archive:
+      result.isArchive = true;
+      break;
+
+    case AGE.oneMonth:
+      result.timestamp = subMonths(Date.now(), 1).getTime();
+      break;
+
+    case AGE.threeMonth:
+      result.timestamp = subMonths(Date.now(), 3).getTime();
+      break;
+  }
+
+  return result;
+};
+
+export const getOffset = (page: number) => {
+  let result = 0;
+
+  if (page > 1) result = page - 1;
+
+  return result;
 };

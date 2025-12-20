@@ -1,4 +1,4 @@
-import type { COLLECTIONS, NOT_FOUND, NOT_UNIQUE_TYPES, TECH_ERROR } from "./constants.js";
+import { AGE, type COLLECTIONS, type NOT_FOUND, type NOT_UNIQUE_TYPES, type TECH_ERROR } from "./constants.js";
 
 export type FindResult<T> = { found: T } | typeof NOT_FOUND | typeof TECH_ERROR;
 export type CollectionName = typeof COLLECTIONS.creds | typeof COLLECTIONS.sessions;
@@ -30,6 +30,22 @@ export type Note = {
   user: string;
   title: string;
   text: string;
+  isArchive: boolean;
   createdAt: number;
   editedAt: number;
+};
+
+export type NoteLite = Omit<Note, "user" | "isArchive" | "createdAt" | "editedAt">;
+
+export type Age = typeof AGE.allTime | typeof AGE.archive | typeof AGE.oneMonth | typeof AGE.threeMonth;
+
+export type AgeData = {
+  isArchive: boolean;
+  timestamp: number;
+};
+
+export type NotesPayload = {
+  age: Age;
+  search: string;
+  page: number;
 };
