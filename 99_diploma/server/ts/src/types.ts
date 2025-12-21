@@ -35,7 +35,12 @@ export type Note = {
   editedAt: number;
 };
 
-export type NoteLite = Omit<Note, "user" | "createdAt" | "editedAt">;
+export type NoteLite = {
+  _id: string;
+  title: string;
+  text: string;
+  isArchive: boolean;
+};
 
 export type Age = typeof AGE.allTime | typeof AGE.archive | typeof AGE.oneMonth | typeof AGE.threeMonth;
 

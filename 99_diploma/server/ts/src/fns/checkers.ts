@@ -1,4 +1,4 @@
-import { AGE } from "../constants.js";
+import { AGE, NO_ONE, NOTHING } from "../constants.js";
 import type { NoteLite, NotesPayload, Session } from "../types.js";
 
 export const getStringOrUdf = (value: any) => (typeof value === "string" ? value : undefined);
@@ -83,11 +83,13 @@ export const getNoteLiteOrUdf = (value: any) => {
   let result: NoteLite | undefined;
 
   if (typeof value === "object" && value !== null) {
+    const id = "id" in value ? getNumberOrUdf(value.id) : undefined;
     const title = "title" in value ? getStringOrUdf(value.title) : undefined;
     const text = "text" in value ? getStringOrUdf(value.text) : undefined;
     const isArchive = "isArchive" in value ? getBooleanOrUdf(value.isArchive) : undefined;
 
-    if (title !== undefined && text !== undefined) result = { title, text, isArchive: isArchive ?? false };
+    if (title !== undefined && text !== undefined)
+      result = { title, text, isArchive: isArchive ?? false, _id: id ? id.toString() : NOTHING };
   }
 
   return result;

@@ -44,7 +44,7 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
     const offset = getOffset(page);
     const sql = db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("title", "text")
+      .select("id", "title", "text")
       .where("user", userName)
       .andWhere("is_archive", isArchive)
       .andWhere("created_at", ">", timestamp);
