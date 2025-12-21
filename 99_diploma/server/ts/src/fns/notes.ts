@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { getNoteLiteOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
 import { ERRORS, LIMIT, NOT_FOUND, ORIGIN, ROUTES, SESSIONS_TIME, TECH_ERROR } from "../constants.js";
-import { createNote, getNotes } from "./pg.js";
+import { createNote, getNote, getNotes } from "./pg.js";
 import { findUserName } from "./mongo.js";
 import { handleExpire, handleTechError, handleUserNotFound } from "./handlers.js";
 import { getUrl } from "./common.js";
@@ -56,6 +56,18 @@ export const handleCreateNote = async (req: Request, res: Response, userName: st
     const id = await createNote(payload, userName);
     if (id) {
       res.status(200).json({ _id: id });
+    } else res.status(500).send(ERRORS.somethingWrong);
+  } else res.status(400).send(ERRORS.badRequest);
+};
+
+export const handleViewNote = async (req: Request, res: Response, userName: string) => {
+  const { body } = req;
+  const id = getStringOrUdf(body.id);
+
+  if (id !== undefined) {
+    const note = await getNote(id, userName);
+    if (note) {
+      res.status(200).json({ title: note.title, isArchived: note.isArchive, html: note.text });
     } else res.status(500).send(ERRORS.somethingWrong);
   } else res.status(400).send(ERRORS.badRequest);
 };

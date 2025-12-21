@@ -85,8 +85,9 @@ export const getNoteLiteOrUdf = (value: any) => {
   if (typeof value === "object" && value !== null) {
     const title = "title" in value ? getStringOrUdf(value.title) : undefined;
     const text = "text" in value ? getStringOrUdf(value.text) : undefined;
+    const isArchive = "isArchive" in value ? getBooleanOrUdf(value.isArchive) : undefined;
 
-    if (title !== undefined && text !== undefined) result = { title, text };
+    if (title !== undefined && text !== undefined) result = { title, text, isArchive: isArchive ?? false };
   }
 
   return result;

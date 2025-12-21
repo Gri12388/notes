@@ -51,10 +51,12 @@ export const ROUTES = {
 
 export const ENDPOINTS = {
   create: "/create",
+  edit: "/edit",
   login: "/login",
   logout: "/logout",
   notes: "/notes",
   signup: "/signup",
+  view: "/view",
 } as const;
 
 export const COOKIES = {

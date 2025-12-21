@@ -42,7 +42,13 @@ export const createNote = (title, text) =>
     },
   });
 
-export const getNote = (id) => {};
+export const getNote = (id) =>
+  req("/view", {
+    method: "POST",
+    body: {
+      id,
+    },
+  });
 
 export const archiveNote = {};
 

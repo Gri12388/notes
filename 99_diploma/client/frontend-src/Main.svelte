@@ -98,7 +98,7 @@
       {#if activeNoteId === 'new'}
         <button disabled class="uk-button uk-button-primary uk-display-block uk-width-1-1">Новая заметка</button>
       {:else}
-        <a use:link={'/new'} href="/" class="uk-button uk-button-primary uk-display-block uk-width-1-1">Новая
+        <a use:link={'/note/new'} href="/" class="uk-button uk-button-primary uk-display-block uk-width-1-1">Новая
           заметка</a>
       {/if}
     {:else}
@@ -146,6 +146,7 @@
   <div class="uk-width-3-4 uk-padding-small">
     <Router
       {routes}
+      prefix={routerPrefix}
       on:routeEvent={routeEvent}
       on:routeLoaded={() => {
         window.scrollTo(0, 0);

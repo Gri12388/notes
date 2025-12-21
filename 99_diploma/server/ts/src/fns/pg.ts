@@ -1,7 +1,7 @@
 import { Pg } from "../classes/Pg.js";
 import { LIMIT, SCHEMA, TABLES } from "../constants.js";
 import type { NoteLite, NotesPayload } from "../types.js";
-import { getNotesLite, getNumberOrUdf } from "./checkers.js";
+import { getNoteLiteOrUdf, getNotesLite, getNumberOrUdf } from "./checkers.js";
 import { getAgeData, getOffset } from "./common.js";
 
 export const configTable = async () => {
@@ -52,7 +52,7 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
     if (search) {
       sql.andWhere("title", "ilike", `%${search}%`).orWhere("text", "ilike", `%${search}%`);
     }
-    
+
     const rows = await sql.offset(offset).limit(LIMIT + 1);
     result = getNotesLite(rows);
   } catch (error) {
@@ -88,6 +88,29 @@ export const createNote = async (payload: NoteLite, userName: string) => {
       );
     const id = getNumberOrUdf(rows[0]?.id)?.toString();
     if (id) result = id;
+  } catch (error) {
+    console.log("[error]", error);
+  }
+
+  return result;
+};
+
+export const getNote = async (id: string, userName: string) => {
+  let result: NoteLite | undefined;
+
+  try {
+    const db = Pg.getInstance().getPg();
+
+    const rows = await db(TABLES.notes)
+      .withSchema(SCHEMA.public)
+      .select("title", "text", "is_archive")
+      .where("user", userName)
+      .andWhere("id", id);
+
+    if (rows.length > 0) {
+      const note = getNoteLiteOrUdf(rows[0]);
+      if (note) result = note;
+    }
   } catch (error) {
     console.log("[error]", error);
   }
