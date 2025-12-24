@@ -1,5 +1,5 @@
-import { AGE, NO_ONE, NOTHING } from "../constants.js";
-import type { NoteLite, NotesPayload, Session } from "../types.js";
+import { AGE } from "../constants.js";
+import type { NoteDb, NotePayload, NotesPayload, Session } from "../types.js";
 import { isInt } from "./common.js";
 
 export const getStringOrUdf = (value: any) => (typeof value === "string" ? value : undefined);
@@ -82,20 +82,33 @@ export const getNotesPayloadOrUdf = (value: any) => {
   return result;
 };
 
-export const getNoteLiteOrUdf = (value: any) => {
-  let result: NoteLite | undefined;
+export const getNotePayloadOrUdf = (value: any) => {
+  let result: NotePayload | undefined;
 
   if (typeof value === "object" && value !== null) {
-    const id = "id" in value ? getNumberOrUdf(value.id) : undefined;
     const title = "title" in value ? getStringOrUdf(value.title) : undefined;
     const text = "text" in value ? getStringOrUdf(value.text) : undefined;
-    const isArchive = "is_archive" in value ? getBooleanOrUdf(value.is_archive) : undefined;
 
-    if (title !== undefined && text !== undefined)
-      result = { title, text, isArchive: isArchive ?? false, _id: id ? id.toString() : NOTHING };
+    if (title !== undefined && text !== undefined) result = { title, text };
   }
 
   return result;
 };
 
-export const getNotesLite = (value: any) => getArray(value, getNoteLiteOrUdf);
+export const getNoteDbOrUdf = (value: any) => {
+  let result: NoteDb | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const _id = "id" in value ? getNumberOrUdf(value.id) : undefined;
+    const title = "title" in value ? getStringOrUdf(value.title) : undefined;
+    const text = "text" in value ? getStringOrUdf(value.text) : undefined;
+    const isArchived = "is_archive" in value ? getBooleanOrUdf(value.is_archive) : undefined;
+
+    if (title !== undefined && text !== undefined && _id !== undefined && isArchived !== undefined)
+      result = { title, text, _id, isArchived };
+  }
+
+  return result;
+};
+
+export const getNotesDb = (value: any) => getArray(value, getNoteDbOrUdf);

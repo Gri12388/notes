@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getIntOrUdf, getNoteLiteOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
+import { getIntOrUdf, getNotePayloadOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
 import { ERRORS, LIMIT, NOT_FOUND, ORIGIN, ROUTES, SESSIONS_TIME, TECH_ERROR } from "../constants.js";
 import { archiveNote, createNote, deleteNote, getNote, getNotes } from "./pg.js";
 import { findUserName } from "./mongo.js";
@@ -64,7 +64,7 @@ export const handleGetNotes = async (req: Request, res: Response, userName: stri
 
 export const handleCreateNote = async (req: Request, res: Response, userName: string) => {
   const { body } = req;
-  const payload = getNoteLiteOrUdf(body);
+  const payload = getNotePayloadOrUdf(body);
 
   if (payload) {
     const id = await createNote(payload, userName);
@@ -81,7 +81,7 @@ export const handleViewNote = async (req: Request, res: Response, userName: stri
   if (id !== undefined) {
     const note = await getNote(id, userName);
     if (note) {
-      res.status(200).json({ title: note.title, isArchived: note.isArchive, html: note.text });
+      res.status(200).json({ title: note.title, isArchived: note.isArchived, html: note.text });
     } else res.status(500).send(ERRORS.somethingWrong);
   } else res.status(400).send(ERRORS.badRequest);
 };

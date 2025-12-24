@@ -1,7 +1,7 @@
 import { Pg } from "../classes/Pg.js";
 import { LIMIT, SCHEMA, TABLES } from "../constants.js";
-import type { NoteLite, NotesPayload } from "../types.js";
-import { getNoteLiteOrUdf, getNotesLite, getNumberOrUdf } from "./checkers.js";
+import type { NoteDb, NotePayload, NotesPayload } from "../types.js";
+import { getNoteDbOrUdf, getNotesDb, getNumberOrUdf } from "./checkers.js";
 import { getAgeData, getOffset } from "./common.js";
 
 export const configTable = async () => {
@@ -34,7 +34,7 @@ export const configTable = async () => {
 };
 
 export const getNotes = async (payload: NotesPayload, userName: string) => {
-  let result: NoteLite[] | undefined;
+  let result: NoteDb[] | undefined;
   try {
     const db = Pg.getInstance().getPg();
 
@@ -54,7 +54,7 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
     }
 
     const rows = await sql.offset(offset).limit(LIMIT + 1);
-    result = getNotesLite(rows);
+    result = getNotesDb(rows);
   } catch (error) {
     console.log("[error]", error);
   }
@@ -77,7 +77,7 @@ export const archiveNote = async (id: number) => {
   return result;
 };
 
-export const createNote = async (payload: NoteLite, userName: string) => {
+export const createNote = async (payload: NotePayload, userName: string) => {
   let result = "";
 
   try {
@@ -126,7 +126,7 @@ export const deleteNote = async (id: number) => {
 };
 
 export const getNote = async (id: string, userName: string) => {
-  let result: NoteLite | undefined;
+  let result: NoteDb | undefined;
 
   try {
     const db = Pg.getInstance().getPg();
@@ -138,7 +138,7 @@ export const getNote = async (id: string, userName: string) => {
       .andWhere("id", id);
 
     if (rows.length > 0) {
-      const note = getNoteLiteOrUdf(rows[0]);
+      const note = getNoteDbOrUdf(rows[0]);
       if (note) result = note;
     }
   } catch (error) {

@@ -35,12 +35,24 @@ export type Note = {
   editedAt: number;
 };
 
-export type NoteLite = {
-  _id: string;
+export type NotePayload = {
   title: string;
   text: string;
-  isArchive: boolean;
 };
+
+export type NoteDb = {
+  _id: number;
+  title: string;
+  text: string;
+  isArchived: boolean;
+};
+
+// export type NoteLite = {
+//   _id: string;
+//   title: string;
+//   text: string;
+//   isArchive: boolean;
+// };
 
 export type Age = typeof AGE.allTime | typeof AGE.archive | typeof AGE.oneMonth | typeof AGE.threeMonth;
 
