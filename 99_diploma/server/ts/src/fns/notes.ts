@@ -1,31 +1,33 @@
 import type { Request, Response } from "express";
-import { getNoteLiteOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
+import { getIntOrUdf, getNoteLiteOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
 import { ERRORS, LIMIT, NOT_FOUND, ORIGIN, ROUTES, SESSIONS_TIME, TECH_ERROR } from "../constants.js";
-import { createNote, getNote, getNotes } from "./pg.js";
+import { archiveNote, createNote, deleteNote, getNote, getNotes } from "./pg.js";
 import { findUserName } from "./mongo.js";
 import { handleExpire, handleTechError, handleUserNotFound } from "./handlers.js";
 import { getUrl } from "./common.js";
 
-export const handlePrerequisite = async (req: Request, res: Response) => {
+export const handlePrerequisite = async (req: Request, res: Response, needUser = true) => {
   let result: string = "";
   const sessionId = req.cookies ? getStringOrUdf(req.cookies.sessionId) : undefined;
 
   if (sessionId) {
     const now = Date.now();
     if (SESSIONS_TIME[sessionId] > now) {
-      const user = await findUserName(sessionId);
-      switch (user) {
-        case NOT_FOUND:
-          handleUserNotFound(res);
-          break;
+      if (needUser) {
+        const user = await findUserName(sessionId);
+        switch (user) {
+          case NOT_FOUND:
+            handleUserNotFound(res);
+            break;
 
-        case TECH_ERROR:
-          handleTechError(res);
-          break;
+          case TECH_ERROR:
+            handleTechError(res);
+            break;
 
-        default:
-          const { found: userName } = user;
-          result = userName;
+          default:
+            const { found: userName } = user;
+            result = userName;
+        }
       }
     } else handleExpire(res, sessionId);
   } else {
@@ -33,6 +35,18 @@ export const handlePrerequisite = async (req: Request, res: Response) => {
   }
 
   return result;
+};
+
+export const handleArchiveNote = async (req: Request, res: Response) => {
+  const { params } = req;
+  const str = getStringOrUdf(params.id);
+  const id = str ? getIntOrUdf(str) : undefined;
+
+  if (id !== undefined) {
+    const isArchived = await archiveNote(id);
+    if (isArchived) res.sendStatus(200);
+    else res.status(500).send(ERRORS.somethingWrong);
+  } else res.status(400).send(ERRORS.badRequest);
 };
 
 export const handleGetNotes = async (req: Request, res: Response, userName: string) => {

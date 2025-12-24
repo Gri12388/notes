@@ -62,6 +62,21 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
   return result;
 };
 
+export const archiveNote = async (id: number) => {
+  let result = false;
+
+  try {
+    const db = Pg.getInstance().getPg();
+
+    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({ is_archive: true });
+    result = true;
+  } catch (error) {
+    console.log("[error]", error);
+  }
+
+  return result;
+};
+
 export const createNote = async (payload: NoteLite, userName: string) => {
   let result = "";
 
@@ -88,6 +103,21 @@ export const createNote = async (payload: NoteLite, userName: string) => {
       );
     const id = getNumberOrUdf(rows[0]?.id)?.toString();
     if (id) result = id;
+  } catch (error) {
+    console.log("[error]", error);
+  }
+
+  return result;
+};
+
+export const deleteNote = async (id: number) => {
+  let result = false;
+
+  try {
+    const db = Pg.getInstance().getPg();
+
+    await db(TABLES.notes).withSchema(SCHEMA.public).del().where({ id });
+    result = true;
   } catch (error) {
     console.log("[error]", error);
   }

@@ -1,9 +1,12 @@
 import { AGE, NO_ONE, NOTHING } from "../constants.js";
 import type { NoteLite, NotesPayload, Session } from "../types.js";
+import { isInt } from "./common.js";
 
 export const getStringOrUdf = (value: any) => (typeof value === "string" ? value : undefined);
 export const getNumberOrUdf = (value: any) => (typeof value === "number" ? value : undefined);
 export const getBooleanOrUdf = (value: any) => (typeof value === "boolean" ? value : undefined);
+
+export const getIntOrUdf = (value: string) => (isInt(value) ? Number(value) : undefined);
 
 export const getRecordOrUdf = (value: any) =>
   typeof value === "object" && value !== null ? (value as Record<string, any>) : undefined;
@@ -86,7 +89,7 @@ export const getNoteLiteOrUdf = (value: any) => {
     const id = "id" in value ? getNumberOrUdf(value.id) : undefined;
     const title = "title" in value ? getStringOrUdf(value.title) : undefined;
     const text = "text" in value ? getStringOrUdf(value.text) : undefined;
-    const isArchive = "isArchive" in value ? getBooleanOrUdf(value.isArchive) : undefined;
+    const isArchive = "is_archive" in value ? getBooleanOrUdf(value.is_archive) : undefined;
 
     if (title !== undefined && text !== undefined)
       result = { title, text, isArchive: isArchive ?? false, _id: id ? id.toString() : NOTHING };

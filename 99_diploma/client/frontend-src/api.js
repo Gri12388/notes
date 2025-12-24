@@ -50,13 +50,13 @@ export const getNote = (id) =>
     },
   });
 
-export const archiveNote = {};
+export const archiveNote = (id) => req(`/archive/${id}`);
 
 export const unarchiveNote = {};
 
 export const editNote = (id, title, text) => {};
 
-export const deleteNote = (id) => {};
+export const deleteNote = (id) => req(`/delete/${id}`);
 
 export const deleteAllArchived = () => {};
 

@@ -73,3 +73,5 @@ export const getOffset = (page: number) => {
 
   return result;
 };
+
+export const isInt = (value: string) => /^\d+$/.test(value);
