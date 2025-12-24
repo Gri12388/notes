@@ -1,7 +1,16 @@
 import type { Request, Response } from "express";
-import { getIntOrUdf, getNotePayloadOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
+import { getIntOrUdf, getNoteCreateOrUdf, getNoteEditOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
 import { ERRORS, LIMIT, NOT_FOUND, ORIGIN, ROUTES, SESSIONS_TIME, TECH_ERROR } from "../constants.js";
-import { archiveNote, createNote, deleteNote, getNote, getNotes } from "./pg.js";
+import {
+  archiveNote,
+  createNote,
+  deleteArchived,
+  deleteNote,
+  editNote,
+  getNote,
+  getNotes,
+  unarchiveNote,
+} from "./pg.js";
 import { findUserName } from "./mongo.js";
 import { handleExpire, handleTechError, handleUserNotFound } from "./handlers.js";
 import { getUrl } from "./common.js";
@@ -49,6 +58,24 @@ export const handleArchiveNote = async (req: Request, res: Response) => {
   } else res.status(400).send(ERRORS.badRequest);
 };
 
+export const handleDelete = async (res: Response, userName: string) => {
+  const isDeleted = await deleteArchived(userName);
+  if (isDeleted) res.sendStatus(200);
+  else res.status(500).send(ERRORS.somethingWrong);
+};
+
+export const handleDeleteNote = async (req: Request, res: Response) => {
+  const { params } = req;
+  const str = getStringOrUdf(params.id);
+  const id = str ? getIntOrUdf(str) : undefined;
+
+  if (id !== undefined) {
+    const isDeleted = await deleteNote(id);
+    if (isDeleted) res.sendStatus(200);
+    else res.status(500).send(ERRORS.somethingWrong);
+  } else res.status(400).send(ERRORS.badRequest);
+};
+
 export const handleGetNotes = async (req: Request, res: Response, userName: string) => {
   const { body } = req;
   const payload = getNotesPayloadOrUdf(body);
@@ -64,7 +91,7 @@ export const handleGetNotes = async (req: Request, res: Response, userName: stri
 
 export const handleCreateNote = async (req: Request, res: Response, userName: string) => {
   const { body } = req;
-  const payload = getNotePayloadOrUdf(body);
+  const payload = getNoteCreateOrUdf(body);
 
   if (payload) {
     const id = await createNote(payload, userName);
@@ -74,9 +101,33 @@ export const handleCreateNote = async (req: Request, res: Response, userName: st
   } else res.status(400).send(ERRORS.badRequest);
 };
 
-export const handleViewNote = async (req: Request, res: Response, userName: string) => {
+export const handleEditNote = async (req: Request, res: Response) => {
   const { body } = req;
-  const id = getStringOrUdf(body.id);
+  const payload = getNoteEditOrUdf(body);
+
+  if (payload) {
+    const isEdited = await editNote(payload);
+    if (isEdited) {
+      res.sendStatus(200);
+    } else res.status(500).send(ERRORS.somethingWrong);
+  } else res.status(400).send(ERRORS.badRequest);
+};
+
+export const handleUnarchiveNote = async (req: Request, res: Response) => {
+  const { params } = req;
+  const str = getStringOrUdf(params.id);
+  const id = str ? getIntOrUdf(str) : undefined;
+
+  if (id !== undefined) {
+    const isUnarchived = await unarchiveNote(id);
+    if (isUnarchived) res.sendStatus(200);
+    else res.status(500).send(ERRORS.somethingWrong);
+  } else res.status(400).send(ERRORS.badRequest);
+};
+
+export const handleViewNote = async (req: Request, res: Response, userName: string) => {
+  const { params } = req;
+  const id = getStringOrUdf(params.id);
 
   if (id !== undefined) {
     const note = await getNote(id, userName);

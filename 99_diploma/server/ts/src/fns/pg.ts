@@ -1,6 +1,6 @@
 import { Pg } from "../classes/Pg.js";
 import { LIMIT, SCHEMA, TABLES } from "../constants.js";
-import type { NoteDb, NotePayload, NotesPayload } from "../types.js";
+import type { NoteCreate, NoteDb, NoteEdit, NotesPayload } from "../types.js";
 import { getNoteDbOrUdf, getNotesDb, getNumberOrUdf } from "./checkers.js";
 import { getAgeData, getOffset } from "./common.js";
 
@@ -77,7 +77,7 @@ export const archiveNote = async (id: number) => {
   return result;
 };
 
-export const createNote = async (payload: NotePayload, userName: string) => {
+export const createNote = async (payload: NoteCreate, userName: string) => {
   let result = "";
 
   try {
@@ -110,6 +110,21 @@ export const createNote = async (payload: NotePayload, userName: string) => {
   return result;
 };
 
+export const deleteArchived = async (user: string) => {
+  let result = false;
+
+  try {
+    const db = Pg.getInstance().getPg();
+
+    await db(TABLES.notes).withSchema(SCHEMA.public).del().where({ user }).andWhere({ is_archive: true });
+    result = true;
+  } catch (error) {
+    console.log("[error]", error);
+  }
+
+  return result;
+};
+
 export const deleteNote = async (id: number) => {
   let result = false;
 
@@ -117,6 +132,28 @@ export const deleteNote = async (id: number) => {
     const db = Pg.getInstance().getPg();
 
     await db(TABLES.notes).withSchema(SCHEMA.public).del().where({ id });
+    result = true;
+  } catch (error) {
+    console.log("[error]", error);
+  }
+
+  return result;
+};
+
+export const editNote = async (payload: NoteEdit) => {
+  let result = false;
+
+  try {
+    const db = Pg.getInstance().getPg();
+
+    const { id, title, text } = payload;
+    const now = Date.now();
+
+    const rows = await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({
+      title,
+      text,
+      edited_at: now,
+    });
     result = true;
   } catch (error) {
     console.log("[error]", error);
@@ -141,6 +178,21 @@ export const getNote = async (id: string, userName: string) => {
       const note = getNoteDbOrUdf(rows[0]);
       if (note) result = note;
     }
+  } catch (error) {
+    console.log("[error]", error);
+  }
+
+  return result;
+};
+
+export const unarchiveNote = async (id: number) => {
+  let result = false;
+
+  try {
+    const db = Pg.getInstance().getPg();
+
+    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({ is_archive: false });
+    result = true;
   } catch (error) {
     console.log("[error]", error);
   }

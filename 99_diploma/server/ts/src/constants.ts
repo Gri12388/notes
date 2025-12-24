@@ -52,12 +52,14 @@ export const ROUTES = {
 export const ENDPOINTS = {
   archive: `/archive/:id`,
   create: "/create",
-  deleteId: "/delete/:id",
+  delete: "/delete",
+  deleteNote: "/delete/:id",
   edit: "/edit",
   login: "/login",
   logout: "/logout",
   notes: "/notes",
   signup: "/signup",
+  unarchive: `/unarchive/:id`,
   view: "/view",
 } as const;
 

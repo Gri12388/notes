@@ -42,22 +42,24 @@ export const createNote = (title, text) =>
     },
   });
 
-export const getNote = (id) =>
-  req("/view", {
-    method: "POST",
-    body: {
-      id,
-    },
-  });
+export const getNote = (id) => req(`/view/${id}`);
 
 export const archiveNote = (id) => req(`/archive/${id}`);
 
-export const unarchiveNote = {};
+export const unarchiveNote = (id) => req(`/unarchive/${id}`);
 
-export const editNote = (id, title, text) => {};
+export const editNote = (id, title, text) =>
+  req("/edit", {
+    method: "POST",
+    body: {
+      id,
+      title,
+      text,
+    },
+  });
 
 export const deleteNote = (id) => req(`/delete/${id}`);
 
-export const deleteAllArchived = () => {};
+export const deleteAllArchived = () => req(`/delete`);
 
 export const notePdfUrl = (id) => {};

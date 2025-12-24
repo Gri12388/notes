@@ -35,7 +35,13 @@ export type Note = {
   editedAt: number;
 };
 
-export type NotePayload = {
+export type NoteCreate = {
+  title: string;
+  text: string;
+};
+
+export type NoteEdit = {
+  id: string;
   title: string;
   text: string;
 };

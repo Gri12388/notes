@@ -1,5 +1,5 @@
 import { AGE } from "../constants.js";
-import type { NoteDb, NotePayload, NotesPayload, Session } from "../types.js";
+import type { NoteCreate, NoteDb, NoteEdit, NotesPayload, Session } from "../types.js";
 import { isInt } from "./common.js";
 
 export const getStringOrUdf = (value: any) => (typeof value === "string" ? value : undefined);
@@ -82,14 +82,28 @@ export const getNotesPayloadOrUdf = (value: any) => {
   return result;
 };
 
-export const getNotePayloadOrUdf = (value: any) => {
-  let result: NotePayload | undefined;
+export const getNoteCreateOrUdf = (value: any) => {
+  let result: NoteCreate | undefined;
 
   if (typeof value === "object" && value !== null) {
     const title = "title" in value ? getStringOrUdf(value.title) : undefined;
     const text = "text" in value ? getStringOrUdf(value.text) : undefined;
 
     if (title !== undefined && text !== undefined) result = { title, text };
+  }
+
+  return result;
+};
+
+export const getNoteEditOrUdf = (value: any) => {
+  let result: NoteEdit | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const id = "id" in value ? getStringOrUdf(value.id) : undefined;
+    const title = "title" in value ? getStringOrUdf(value.title) : undefined;
+    const text = "text" in value ? getStringOrUdf(value.text) : undefined;
+
+    if (id !== undefined && title !== undefined && text !== undefined) result = { id, title, text };
   }
 
   return result;
