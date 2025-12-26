@@ -53,14 +53,14 @@ export const handleArchiveNote = async (req: Request, res: Response) => {
 
   if (id !== undefined) {
     const isArchived = await archiveNote(id);
-    if (isArchived) res.sendStatus(200);
+    if (isArchived) res.status(200).json({ status: "success" });
     else res.status(500).send(ERRORS.somethingWrong);
   } else res.status(400).send(ERRORS.badRequest);
 };
 
 export const handleDelete = async (res: Response, userName: string) => {
   const isDeleted = await deleteArchived(userName);
-  if (isDeleted) res.sendStatus(200);
+  if (isDeleted) res.status(200).json({ status: "success" });
   else res.status(500).send(ERRORS.somethingWrong);
 };
 
@@ -71,7 +71,7 @@ export const handleDeleteNote = async (req: Request, res: Response) => {
 
   if (id !== undefined) {
     const isDeleted = await deleteNote(id);
-    if (isDeleted) res.sendStatus(200);
+    if (isDeleted) res.status(200).json({ status: "success" });
     else res.status(500).send(ERRORS.somethingWrong);
   } else res.status(400).send(ERRORS.badRequest);
 };
@@ -108,7 +108,7 @@ export const handleEditNote = async (req: Request, res: Response) => {
   if (payload) {
     const isEdited = await editNote(payload);
     if (isEdited) {
-      res.sendStatus(200);
+      res.status(200).json({ status: "success" });
     } else res.status(500).send(ERRORS.somethingWrong);
   } else res.status(400).send(ERRORS.badRequest);
 };
@@ -120,7 +120,7 @@ export const handleUnarchiveNote = async (req: Request, res: Response) => {
 
   if (id !== undefined) {
     const isUnarchived = await unarchiveNote(id);
-    if (isUnarchived) res.sendStatus(200);
+    if (isUnarchived) res.status(200).json({ status: "success" });
     else res.status(500).send(ERRORS.somethingWrong);
   } else res.status(400).send(ERRORS.badRequest);
 };

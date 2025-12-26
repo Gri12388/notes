@@ -44,7 +44,7 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
     const offset = getOffset(page);
     const sql = db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("id", "title", "text")
+      .select("id", "title", "text", "is_archive")
       .where("user", userName)
       .andWhere("is_archive", isArchive)
       .andWhere("created_at", ">", timestamp);
@@ -170,7 +170,7 @@ export const getNote = async (id: string, userName: string) => {
 
     const rows = await db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("title", "text", "is_archive")
+      .select("id", "title", "text", "is_archive")
       .where("user", userName)
       .andWhere("id", id);
 

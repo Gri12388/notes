@@ -20,7 +20,7 @@ apiRouter.get(ENDPOINTS.archive, async (req, res) => {
 });
 
 apiRouter.get(ENDPOINTS.delete, async (req, res) => {
-  const userName = await handlePrerequisite(req, res, false);
+  const userName = await handlePrerequisite(req, res);
 
   if (userName) {
     await handleDelete(res, userName);

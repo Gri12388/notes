@@ -60,7 +60,7 @@ export const ENDPOINTS = {
   notes: "/notes",
   signup: "/signup",
   unarchive: `/unarchive/:id`,
-  view: "/view",
+  view: "/view/:id",
 } as const;
 
 export const COOKIES = {
