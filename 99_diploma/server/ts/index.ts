@@ -2,11 +2,12 @@ import express from "express";
 
 import cookieParser from "cookie-parser";
 import nunjucks from "nunjucks";
-import { COLLECTIONS, ORIGIN, PORT, ROUTES, USER } from "./src/constants.js";
+import { ORIGIN, PORT, ROUTES } from "./src/constants.js";
 import { rootRouter } from "./src/routes/root.js";
 import { apiRouter } from "./src/routes/api.js";
-import { configCollection } from "./src/fns/mongo.js";
 import { configTable } from "./src/fns/pg.js";
+import { configUsers } from "./src/fns/users.js";
+import { configSessions } from "./src/fns/sessions.js";
 
 const app = express();
 
@@ -23,10 +24,10 @@ app.use(ROUTES.api, apiRouter);
 app.use(ROUTES.root, rootRouter);
 
 app.listen(PORT, async () => {
-  const isCreds = await configCollection(COLLECTIONS.creds, USER);
-  const isSessions = await configCollection(COLLECTIONS.sessions, USER);
+  const isUsers = await configUsers();
+  const isSessions = await configSessions();
   const isNodes = await configTable();
 
-  if (isCreds && isSessions && isNodes) console.log(`Listening on ${ORIGIN}`);
+  if (isSessions && isNodes && isUsers) console.log(`Listening on ${ORIGIN}`);
   else process.exit(1);
 });

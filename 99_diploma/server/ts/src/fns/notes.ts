@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { getIntOrUdf, getNoteCreateOrUdf, getNoteEditOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
-import { ERRORS, LIMIT, NOT_FOUND, ORIGIN, ROUTES, SESSIONS_TIME, TECH_ERROR } from "../constants.js";
+import { ERRORS, LIMIT, ORIGIN, ROUTES, SESSIONS } from "../constants.js";
 import {
   archiveNote,
   createNote,
@@ -11,8 +11,7 @@ import {
   getNotes,
   unarchiveNote,
 } from "./pg.js";
-import { findUserName } from "./mongo.js";
-import { handleExpire, handleTechError, handleUserNotFound } from "./handlers.js";
+import { handleExpire } from "./handlers.js";
 import { getUrl } from "./common.js";
 
 export const handlePrerequisite = async (req: Request, res: Response, needUser = true) => {
@@ -20,28 +19,15 @@ export const handlePrerequisite = async (req: Request, res: Response, needUser =
   const sessionId = req.cookies ? getStringOrUdf(req.cookies.sessionId) : undefined;
 
   if (sessionId) {
-    const now = Date.now();
-    if (SESSIONS_TIME[sessionId] > now) {
-      if (needUser) {
-        const user = await findUserName(sessionId);
-        switch (user) {
-          case NOT_FOUND:
-            handleUserNotFound(res);
-            break;
-
-          case TECH_ERROR:
-            handleTechError(res);
-            break;
-
-          default:
-            const { found: userName } = user;
-            result = userName;
-        }
-      }
-    } else handleExpire(res, sessionId);
-  } else {
-    res.status(307).redirect(getUrl({ origin: ORIGIN, path: ROUTES.root, search: [] }).toString());
-  }
+    const session = SESSIONS.get(sessionId);
+    if (session) {
+      const { expire, user } = session;
+      const now = Date.now();
+      if (expire > now) {
+        result = user;
+      } else handleExpire(res, sessionId);
+    } else res.status(307).redirect(getUrl({ origin: ORIGIN, path: ROUTES.root, search: [] }).toString());
+  } else res.status(307).redirect(getUrl({ origin: ORIGIN, path: ROUTES.root, search: [] }).toString());
 
   return result;
 };

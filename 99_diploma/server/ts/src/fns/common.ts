@@ -20,12 +20,12 @@ export const getCreds = (data: any) => {
   const record = getRecordOrUdf(data);
 
   if (record) {
-    const { username, password } = record;
-    const temp = { username: getStringOrUdf(username), password: getStringOrUdf(password) };
-    if (temp.username && temp.password) {
+    const username = getStringOrUdf(record.username);
+    const password = getStringOrUdf(record.password);
+    if (username && password) {
       result = {
-        login: temp.username,
-        password: temp.password,
+        login: username,
+        password,
       };
     }
   }
