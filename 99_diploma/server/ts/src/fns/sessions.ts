@@ -64,7 +64,7 @@ export const setSession = async (user: string, expire: number) => {
   return result;
 };
 
-export const findSession = async (id: number) => {
+export const findSession = async (id: string) => {
   let result: Session | string = NOTHING;
 
   try {
@@ -81,7 +81,7 @@ export const findSession = async (id: number) => {
   return result;
 };
 
-export const delSession = async (id: number | string) => {
+export const delSession = async (id: string) => {
   let result = false;
 
   try {
