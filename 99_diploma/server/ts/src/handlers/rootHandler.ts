@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getSessionOrUdf, getStringOrUdf } from "../fns/checkers.js";
+import { checkSession, checkString } from "../fns/checkers.js";
 import { delSession, findSession } from "../fns/sessions.js";
 import { COOKIES, ERRORS, NOT_FOUND, NOTHING, SESSIONS } from "../constants.js";
 import { handleAuthError } from "./commonHandlers.js";
@@ -34,7 +34,7 @@ const checkSessionPeriod = async (res: Response, session: Session, sessionId: st
 };
 
 const parseFound = async (res: Response, found: string | Session, sessionId: string) => {
-  const session = getSessionOrUdf(found);
+  const session = checkSession(found);
   if (session) await checkSessionPeriod(res, session, sessionId);
   else handleTechError(res);
 };
@@ -58,7 +58,7 @@ const findSessionById = async (res: Response, sessionId: string) => {
 
 export const handleRoot = async (req: Request, res: Response) => {
   const { cookies } = req;
-  const sessionId = getStringOrUdf(cookies?.sessionId);
+  const sessionId = checkString(cookies?.sessionId);
 
   if (sessionId !== undefined) await findSessionById(res, sessionId);
   else res.render("index", { index: { authError: req.query.authError, success: req.query.success } });

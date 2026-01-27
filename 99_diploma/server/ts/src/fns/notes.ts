@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getIntOrUdf, getNoteCreateOrUdf, getNoteEditOrUdf, getNotesPayloadOrUdf, getStringOrUdf } from "./checkers.js";
+import { checkInt, getNoteCreateOrUdf, getNoteEditOrUdf, getNotesPayloadOrUdf, checkString } from "./checkers.js";
 import { ERRORS, LIMIT, ORIGIN, ROUTES, SESSIONS } from "../constants.js";
 import {
   archiveNote,
@@ -16,7 +16,7 @@ import { getUrl } from "./common.js";
 
 export const handlePrerequisite = async (req: Request, res: Response, needUser = true) => {
   let result: string = "";
-  const sessionId = req.cookies ? getStringOrUdf(req.cookies.sessionId) : undefined;
+  const sessionId = req.cookies ? checkString(req.cookies.sessionId) : undefined;
 
   if (sessionId) {
     const session = SESSIONS.get(sessionId);
@@ -34,8 +34,8 @@ export const handlePrerequisite = async (req: Request, res: Response, needUser =
 
 export const handleArchiveNote = async (req: Request, res: Response) => {
   const { params } = req;
-  const str = getStringOrUdf(params.id);
-  const id = str ? getIntOrUdf(str) : undefined;
+  const str = checkString(params.id);
+  const id = str ? checkInt(str) : undefined;
 
   if (id !== undefined) {
     const isArchived = await archiveNote(id);
@@ -52,8 +52,8 @@ export const handleDelete = async (res: Response, userName: string) => {
 
 export const handleDeleteNote = async (req: Request, res: Response) => {
   const { params } = req;
-  const str = getStringOrUdf(params.id);
-  const id = str ? getIntOrUdf(str) : undefined;
+  const str = checkString(params.id);
+  const id = str ? checkInt(str) : undefined;
 
   if (id !== undefined) {
     const isDeleted = await deleteNote(id);
@@ -101,8 +101,8 @@ export const handleEditNote = async (req: Request, res: Response) => {
 
 export const handleUnarchiveNote = async (req: Request, res: Response) => {
   const { params } = req;
-  const str = getStringOrUdf(params.id);
-  const id = str ? getIntOrUdf(str) : undefined;
+  const str = checkString(params.id);
+  const id = str ? checkInt(str) : undefined;
 
   if (id !== undefined) {
     const isUnarchived = await unarchiveNote(id);
@@ -113,7 +113,7 @@ export const handleUnarchiveNote = async (req: Request, res: Response) => {
 
 export const handleViewNote = async (req: Request, res: Response, userName: string) => {
   const { params } = req;
-  const id = getStringOrUdf(params.id);
+  const id = checkString(params.id);
 
   if (id !== undefined) {
     const note = await getNote(id, userName);

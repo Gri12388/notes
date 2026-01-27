@@ -3,7 +3,7 @@ import { Pg } from "../classes/Pg.js";
 import { NOT_FOUND, NOTHING, PGERRORS, SCHEMA, TABLES, UNIQUE_VIOLATION } from "../constants.js";
 import { locale } from "../locale.js";
 import type { Session } from "../types.js";
-import { getNumberOrUdf } from "./checkers.js";
+import { checkNumber } from "./checkers.js";
 import { makeSession } from "./makers.js";
 
 export const configSessions = async () => {
@@ -47,7 +47,7 @@ export const setSession = async (user: string, expire: number) => {
       ["id"],
     );
 
-    if (rows.length > 0) result = getNumberOrUdf(rows[0].id)?.toString() ?? NOTHING;
+    if (rows.length > 0) result = checkNumber(rows[0].id)?.toString() ?? NOTHING;
     else console.warn("[warn", locale.emptyArray);
   } catch (error) {
     if (error instanceof DatabaseError) {

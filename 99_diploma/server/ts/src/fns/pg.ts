@@ -1,7 +1,7 @@
 import { Pg } from "../classes/Pg.js";
 import { LIMIT, SCHEMA, TABLES } from "../constants.js";
 import type { NoteCreate, NoteDb, NoteEdit, NotesPayload } from "../types.js";
-import { getNoteDbOrUdf, getNotesDb, getNumberOrUdf } from "./checkers.js";
+import { getNoteDbOrUdf, getNotesDb, checkNumber } from "./checkers.js";
 import { getAgeData, getOffset } from "./common.js";
 
 export const configTable = async () => {
@@ -101,7 +101,7 @@ export const createNote = async (payload: NoteCreate, userName: string) => {
         ],
         ["id"],
       );
-    const id = getNumberOrUdf(rows[0]?.id)?.toString();
+    const id = checkNumber(rows[0]?.id)?.toString();
     if (id) result = id;
   } catch (error) {
     console.log("[error]", error);

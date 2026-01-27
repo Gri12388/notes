@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import { subMonths } from "date-fns";
 import type { MongoClient } from "mongodb";
 import type { Age, AgeData, Creds, UrlOptions } from "../types.js";
-import { getRecordOrUdf, getStringOrUdf } from "./checkers.js";
+import { checkRecord, checkString } from "./checkers.js";
 import { AGE } from "../constants.js";
 
 export const getCollection = async (mongo: MongoClient, dbName: string, collectionName: string) => {
@@ -17,11 +17,11 @@ export const hashText = (text: string) => createHash("sha256").update(text).dige
 
 export const getCreds = (data: any) => {
   let result: Creds | undefined;
-  const record = getRecordOrUdf(data);
+  const record = checkRecord(data);
 
   if (record) {
-    const username = getStringOrUdf(record.username);
-    const password = getStringOrUdf(record.password);
+    const username = checkString(record.username);
+    const password = checkString(record.password);
     if (username && password) {
       result = {
         login: username,

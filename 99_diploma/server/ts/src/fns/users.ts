@@ -1,6 +1,6 @@
 import { Pg } from "../classes/Pg.js";
 import { NOT_FOUND, NOTHING, PGERRORS, SCHEMA, TABLES, TRUE, UNIQUE_VIOLATION } from "../constants.js";
-import { getStringOrUdf } from "./checkers.js";
+import { checkString } from "./checkers.js";
 import { DatabaseError } from "pg";
 
 export const configUsers = async () => {
@@ -64,7 +64,7 @@ export const findPassword = async (user: string) => {
 
     const rows = await db(TABLES.users).withSchema(SCHEMA.public).select("password").where("user", user);
 
-    if (rows.length > 0) result = getStringOrUdf(rows[0].password) ?? NOTHING;
+    if (rows.length > 0) result = checkString(rows[0].password) ?? NOTHING;
     else result = NOT_FOUND;
   } catch (error) {
     console.error(`[error]: ${error}`);
