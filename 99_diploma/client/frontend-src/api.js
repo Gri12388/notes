@@ -24,7 +24,7 @@ const req = (url, options = {}) => {
 };
 
 export const getNotes = ({ age, search, page } = {}) =>
-  req("/notes", {
+  req("/list", {
     method: "POST",
     body: {
       age,
@@ -60,6 +60,6 @@ export const editNote = (id, title, text) =>
 
 export const deleteNote = (id) => req(`/delete/${id}`);
 
-export const deleteAllArchived = () => req(`/delete`);
+export const deleteAllArchived = () => req(`/purge`);
 
 export const notePdfUrl = (id) => {};

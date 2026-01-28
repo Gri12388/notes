@@ -35,35 +35,10 @@ export type Note = {
   createdAt: number;
 };
 
-// export type NoteCreate = {
-//   title: string;
-//   text: string;
-// };
-
-// export type NoteEdit = {
-//   id: string;
-//   title: string;
-//   text: string;
-// };
-
-// export type NoteDb = {
-//   _id: number;
-//   title: string;
-//   text: string;
-//   isArchived: boolean;
-// };
-
-// export type NoteLite = {
-//   _id: string;
-//   title: string;
-//   text: string;
-//   isArchive: boolean;
-// };
-
 export type Age = typeof AGE.allTime | typeof AGE.archive | typeof AGE.oneMonth | typeof AGE.threeMonth;
 
 export type AgeData = {
-  isArchive: boolean;
+  isArchived: boolean;
   timestamp: number;
 };
 

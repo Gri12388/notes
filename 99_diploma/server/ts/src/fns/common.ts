@@ -45,13 +45,13 @@ export const getUrl = (options: UrlOptions) => {
 
 export const getAgeData = (age: Age) => {
   let result: AgeData = {
-    isArchive: false,
+    isArchived: false,
     timestamp: 0,
   };
 
   switch (age) {
     case AGE.archive:
-      result.isArchive = true;
+      result.isArchived = true;
       break;
 
     case AGE.oneMonth:

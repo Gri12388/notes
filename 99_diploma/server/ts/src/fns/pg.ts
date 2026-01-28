@@ -40,13 +40,13 @@ export const selectNotes = async (payload: List, userName: string) => {
 
     const { age, page, search } = payload;
 
-    const { isArchive, timestamp } = getAgeData(age);
+    const { isArchived, timestamp } = getAgeData(age);
     const offset = getOffset(page);
     const sql = db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("id", "title", "text", "is_archive")
+      .select("id", "title", "text", "is_archived", "created_at")
       .where("user", userName)
-      .andWhere("is_archive", isArchive)
+      .andWhere("is_archived", isArchived)
       .andWhere("created_at", ">", timestamp);
 
     if (search) {
@@ -68,7 +68,7 @@ export const archiveNote = async (id: string) => {
   try {
     const db = Pg.getInstance().getPg();
 
-    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({ is_archive: true });
+    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({ is_archived: true });
     result = true;
   } catch (error) {
     console.log("[error]", error);
@@ -94,7 +94,7 @@ export const createNote = async (payload: Note, userName: string) => {
             user: userName,
             title,
             text,
-            is_archive: false,
+            is_archived: false,
             created_at: now,
           },
         ],
@@ -115,7 +115,7 @@ export const deleteArchived = async (user: string) => {
   try {
     const db = Pg.getInstance().getPg();
 
-    await db(TABLES.notes).withSchema(SCHEMA.public).del().where({ user }).andWhere({ is_archive: true });
+    await db(TABLES.notes).withSchema(SCHEMA.public).del().where({ user }).andWhere({ is_archived: true });
     result = true;
   } catch (error) {
     console.log("[error]", error);
@@ -148,7 +148,7 @@ export const editNote = async (payload: Note) => {
     const { id, title, text } = payload;
     const now = Date.now();
 
-    const rows = await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({
+    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({
       title,
       text,
       edited_at: now,
@@ -169,7 +169,7 @@ export const getNote = async (id: string, userName: string) => {
 
     const rows = await db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("id", "title", "text", "is_archive")
+      .select("id", "title", "text", "is_archived", "created_at")
       .where("user", userName)
       .andWhere("id", id);
 
@@ -190,7 +190,7 @@ export const unarchiveNote = async (id: string) => {
   try {
     const db = Pg.getInstance().getPg();
 
-    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({ is_archive: false });
+    await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({ is_archived: false });
     result = true;
   } catch (error) {
     console.log("[error]", error);

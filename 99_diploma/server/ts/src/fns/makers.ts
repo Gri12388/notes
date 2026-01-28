@@ -19,11 +19,11 @@ export const makeNote = (value: any) => {
   let result: Note | undefined;
 
   if (typeof value === "object" && value !== null) {
-    const id = "id" in value ? checkString(value.id) : undefined;
+    const id = "id" in value ? checkNumber(value.id) : undefined;
     const title = "title" in value ? checkString(value.title) : undefined;
     const text = "text" in value ? checkString(value.text) : undefined;
     const isArchived = "is_archived" in value ? checkBoolean(value.is_archived) : undefined;
-    const createdAt = "created_at" in value ? checkNumber(value.created_at) : undefined;
+    const createdAt = "created_at" in value ? checkInt(checkString(value.created_at) ?? "") : undefined;
 
     if (
       title !== undefined &&
@@ -32,7 +32,7 @@ export const makeNote = (value: any) => {
       isArchived !== undefined &&
       createdAt !== undefined
     )
-      result = { title, text, id, isArchived, createdAt, user: "" };
+      result = { title, text, id: id ? id.toString() : "", isArchived, createdAt, user: "" };
   }
 
   return result;

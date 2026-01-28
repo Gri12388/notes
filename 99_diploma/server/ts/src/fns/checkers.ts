@@ -74,7 +74,7 @@ export const checkNote = (value: any) => {
   let result: Note | undefined;
 
   if (typeof value === "object" && value !== null) {
-    const id = "id" in value ? checkString(value.id) : undefined;
+    const id = "id" in value ? checkNumber(value.id) : undefined;
     const user = "user" in value ? checkString(value.user) : undefined;
     const title = "title" in value ? checkString(value.title) : undefined;
     const text = "text" in value ? checkString(value.text) : undefined;
@@ -83,7 +83,7 @@ export const checkNote = (value: any) => {
 
     if (title !== undefined && text !== undefined)
       result = {
-        id: id ?? "",
+        id: id ? id.toString() : "",
         user: user ?? "",
         title,
         text,
