@@ -27,31 +27,31 @@ export type UrlOptions = {
 export type NotUnique = typeof NOT_UNIQUE_TYPES.session | typeof NOT_UNIQUE_TYPES.user;
 
 export type Note = {
+  id: string;
   user: string;
   title: string;
   text: string;
-  isArchive: boolean;
-  createdAt: number;
-  editedAt: number;
-};
-
-export type NoteCreate = {
-  title: string;
-  text: string;
-};
-
-export type NoteEdit = {
-  id: string;
-  title: string;
-  text: string;
-};
-
-export type NoteDb = {
-  _id: number;
-  title: string;
-  text: string;
   isArchived: boolean;
+  createdAt: number;
 };
+
+// export type NoteCreate = {
+//   title: string;
+//   text: string;
+// };
+
+// export type NoteEdit = {
+//   id: string;
+//   title: string;
+//   text: string;
+// };
+
+// export type NoteDb = {
+//   _id: number;
+//   title: string;
+//   text: string;
+//   isArchived: boolean;
+// };
 
 // export type NoteLite = {
 //   _id: string;
@@ -67,7 +67,7 @@ export type AgeData = {
   timestamp: number;
 };
 
-export type NotesPayload = {
+export type List = {
   age: Age;
   search: string;
   page: number;

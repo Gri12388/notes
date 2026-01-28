@@ -1,67 +1,28 @@
 import express from "express";
 import { ENDPOINTS } from "../constants.js";
-import {
-  handleArchiveNote,
-  handleCreateNote,
-  handleDelete,
-  handleDeleteNote,
-  handleEditNote,
-  handleGetNotes,
-  handlePrerequisite,
-  handleUnarchiveNote,
-  handleViewNote,
-} from "../fns/notes.js";
+import { handleList } from "../handlers/listHandler.js";
+import { handleDelete } from "../handlers/deleteHandler.js";
+import { handlePurge } from "../handlers/purgeHandler.js";
+import { handleArchive } from "../handlers/archiveHandler.js";
+import { handleCreate } from "../handlers/createHandler.js";
+import { handleEdit } from "../handlers/editHandler.js";
+import { handleUnarchive } from "../handlers/unarchiveHandler.js";
+import { handleView } from "../handlers/viewHandler.js";
 
 export const apiRouter = express.Router();
 
-apiRouter.get(ENDPOINTS.archive, async (req, res) => {
-  await handlePrerequisite(req, res, false);
-  await handleArchiveNote(req, res);
-});
+apiRouter.get(ENDPOINTS.archive, handleArchive);
 
-apiRouter.get(ENDPOINTS.delete, async (req, res) => {
-  const userName = await handlePrerequisite(req, res);
+apiRouter.get(ENDPOINTS.purge, handlePurge);
 
-  if (userName) {
-    await handleDelete(res, userName);
-  }
-});
+apiRouter.get(ENDPOINTS.delete, handleDelete);
 
-apiRouter.get(ENDPOINTS.deleteNote, async (req, res) => {
-  await handlePrerequisite(req, res, false);
-  await handleDeleteNote(req, res);
-});
+apiRouter.post(ENDPOINTS.create, express.json(), handleCreate);
 
-apiRouter.post(ENDPOINTS.create, express.json(), async (req, res) => {
-  const userName = await handlePrerequisite(req, res);
+apiRouter.post(ENDPOINTS.edit, express.json(), handleEdit);
 
-  if (userName) {
-    await handleCreateNote(req, res, userName);
-  }
-});
+apiRouter.post(ENDPOINTS.list, express.json(), handleList);
 
-apiRouter.post(ENDPOINTS.edit, express.json(), async (req, res) => {
-  await handlePrerequisite(req, res);
-  await handleEditNote(req, res);
-});
+apiRouter.get(ENDPOINTS.unarchive, handleUnarchive);
 
-apiRouter.post(ENDPOINTS.notes, express.json(), async (req, res) => {
-  const userName = await handlePrerequisite(req, res);
-
-  if (userName) {
-    await handleGetNotes(req, res, userName);
-  }
-});
-
-apiRouter.get(ENDPOINTS.unarchive, async (req, res) => {
-  await handlePrerequisite(req, res, false);
-  await handleUnarchiveNote(req, res);
-});
-
-apiRouter.get(ENDPOINTS.view, express.json(), async (req, res) => {
-  const userName = await handlePrerequisite(req, res);
-
-  if (userName) {
-    await handleViewNote(req, res, userName);
-  }
-});
+apiRouter.get(ENDPOINTS.view, express.json(), handleView);

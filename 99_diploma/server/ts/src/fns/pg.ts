@@ -1,27 +1,27 @@
 import { Pg } from "../classes/Pg.js";
 import { LIMIT, SCHEMA, TABLES } from "../constants.js";
-import type { NoteCreate, NoteDb, NoteEdit, NotesPayload } from "../types.js";
-import { getNoteDbOrUdf, getNotesDb, checkNumber } from "./checkers.js";
+import type { List, Note } from "../types.js";
+import { checkNumber } from "./checkers.js";
 import { getAgeData, getOffset } from "./common.js";
+import { makeNote, makeNotes } from "./makers.js";
 
-export const configTable = async () => {
+export const configNotes = async () => {
   let result = false;
 
   try {
     const db = Pg.getInstance().getPg();
 
-    const isNodes = await db.schema.withSchema(SCHEMA.public).hasTable(TABLES.notes);
+    const isNotes = await db.schema.withSchema(SCHEMA.public).hasTable(TABLES.notes);
 
-    if (isNodes) result = true;
+    if (isNotes) result = true;
     else {
       await db.schema.withSchema(SCHEMA.public).createTable(TABLES.notes, (table) => {
         table.increments("id").primary();
         table.string("user").notNullable();
         table.string("title").notNullable();
         table.string("text").notNullable();
-        table.boolean("is_archive").notNullable();
+        table.boolean("is_archived").notNullable();
         table.bigint("created_at").notNullable();
-        table.bigint("edited_at").notNullable();
       });
 
       result = true;
@@ -33,8 +33,8 @@ export const configTable = async () => {
   return result;
 };
 
-export const getNotes = async (payload: NotesPayload, userName: string) => {
-  let result: NoteDb[] | undefined;
+export const selectNotes = async (payload: List, userName: string) => {
+  let result: Note[] | undefined;
   try {
     const db = Pg.getInstance().getPg();
 
@@ -54,7 +54,7 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
     }
 
     const rows = await sql.offset(offset).limit(LIMIT + 1);
-    result = getNotesDb(rows);
+    result = makeNotes(rows);
   } catch (error) {
     console.log("[error]", error);
   }
@@ -62,7 +62,7 @@ export const getNotes = async (payload: NotesPayload, userName: string) => {
   return result;
 };
 
-export const archiveNote = async (id: number) => {
+export const archiveNote = async (id: string) => {
   let result = false;
 
   try {
@@ -77,7 +77,7 @@ export const archiveNote = async (id: number) => {
   return result;
 };
 
-export const createNote = async (payload: NoteCreate, userName: string) => {
+export const createNote = async (payload: Note, userName: string) => {
   let result = "";
 
   try {
@@ -96,7 +96,6 @@ export const createNote = async (payload: NoteCreate, userName: string) => {
             text,
             is_archive: false,
             created_at: now,
-            edited_at: now,
           },
         ],
         ["id"],
@@ -125,7 +124,7 @@ export const deleteArchived = async (user: string) => {
   return result;
 };
 
-export const deleteNote = async (id: number) => {
+export const deleteNote = async (id: string) => {
   let result = false;
 
   try {
@@ -140,7 +139,7 @@ export const deleteNote = async (id: number) => {
   return result;
 };
 
-export const editNote = async (payload: NoteEdit) => {
+export const editNote = async (payload: Note) => {
   let result = false;
 
   try {
@@ -163,7 +162,7 @@ export const editNote = async (payload: NoteEdit) => {
 };
 
 export const getNote = async (id: string, userName: string) => {
-  let result: NoteDb | undefined;
+  let result: Note | undefined;
 
   try {
     const db = Pg.getInstance().getPg();
@@ -175,7 +174,7 @@ export const getNote = async (id: string, userName: string) => {
       .andWhere("id", id);
 
     if (rows.length > 0) {
-      const note = getNoteDbOrUdf(rows[0]);
+      const note = makeNote(rows[0]);
       if (note) result = note;
     }
   } catch (error) {
@@ -185,7 +184,7 @@ export const getNote = async (id: string, userName: string) => {
   return result;
 };
 
-export const unarchiveNote = async (id: number) => {
+export const unarchiveNote = async (id: string) => {
   let result = false;
 
   try {

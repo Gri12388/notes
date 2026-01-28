@@ -1,6 +1,6 @@
 import { NOTHING } from "../constants.js";
-import type { Session } from "../types.js";
-import { checkInt, checkString } from "./checkers.js";
+import type { Note, Session } from "../types.js";
+import { checkArray, checkBoolean, checkInt, checkNumber, checkString } from "./checkers.js";
 
 export const makeSession = (value: unknown) => {
   let result: Session | undefined;
@@ -14,3 +14,28 @@ export const makeSession = (value: unknown) => {
 
   return result;
 };
+
+export const makeNote = (value: any) => {
+  let result: Note | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const id = "id" in value ? checkString(value.id) : undefined;
+    const title = "title" in value ? checkString(value.title) : undefined;
+    const text = "text" in value ? checkString(value.text) : undefined;
+    const isArchived = "is_archived" in value ? checkBoolean(value.is_archived) : undefined;
+    const createdAt = "created_at" in value ? checkNumber(value.created_at) : undefined;
+
+    if (
+      title !== undefined &&
+      text !== undefined &&
+      id !== undefined &&
+      isArchived !== undefined &&
+      createdAt !== undefined
+    )
+      result = { title, text, id, isArchived, createdAt, user: "" };
+  }
+
+  return result;
+};
+
+export const makeNotes = (value: any) => checkArray(value, makeNote);

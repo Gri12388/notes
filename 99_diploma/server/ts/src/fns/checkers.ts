@@ -1,5 +1,5 @@
 import { AGE } from "../constants.js";
-import type { NoteCreate, NoteDb, NoteEdit, NotesPayload, Session } from "../types.js";
+import type { List, Session, Note } from "../types.js";
 import { isInt } from "./common.js";
 
 export const checkString = (value: any) => (typeof value === "string" ? value : undefined);
@@ -56,8 +56,8 @@ export const getAgeOrUdf = (value: any) => {
   }
 };
 
-export const getNotesPayloadOrUdf = (value: any) => {
-  let result: NotesPayload | undefined;
+export const checkList = (value: any) => {
+  let result: List | undefined;
 
   if (typeof value === "object" && value !== null) {
     const age = "age" in value ? getAgeOrUdf(value.age) : undefined;
@@ -70,47 +70,27 @@ export const getNotesPayloadOrUdf = (value: any) => {
   return result;
 };
 
-export const getNoteCreateOrUdf = (value: any) => {
-  let result: NoteCreate | undefined;
-
-  if (typeof value === "object" && value !== null) {
-    const title = "title" in value ? checkString(value.title) : undefined;
-    const text = "text" in value ? checkString(value.text) : undefined;
-
-    if (title !== undefined && text !== undefined) result = { title, text };
-  }
-
-  return result;
-};
-
-export const getNoteEditOrUdf = (value: any) => {
-  let result: NoteEdit | undefined;
+export const checkNote = (value: any) => {
+  let result: Note | undefined;
 
   if (typeof value === "object" && value !== null) {
     const id = "id" in value ? checkString(value.id) : undefined;
+    const user = "user" in value ? checkString(value.user) : undefined;
     const title = "title" in value ? checkString(value.title) : undefined;
     const text = "text" in value ? checkString(value.text) : undefined;
+    const isArchived = "isArchived" in value ? checkBoolean(value.isArchived) : undefined;
+    const createdAt = "created_at" in value ? checkNumber(value.created_at) : undefined;
 
-    if (id !== undefined && title !== undefined && text !== undefined) result = { id, title, text };
+    if (title !== undefined && text !== undefined)
+      result = {
+        id: id ?? "",
+        user: user ?? "",
+        title,
+        text,
+        isArchived: isArchived ?? false,
+        createdAt: createdAt ?? 0,
+      };
   }
 
   return result;
 };
-
-export const getNoteDbOrUdf = (value: any) => {
-  let result: NoteDb | undefined;
-
-  if (typeof value === "object" && value !== null) {
-    const _id = "id" in value ? checkNumber(value.id) : undefined;
-    const title = "title" in value ? checkString(value.title) : undefined;
-    const text = "text" in value ? checkString(value.text) : undefined;
-    const isArchived = "is_archive" in value ? checkBoolean(value.is_archive) : undefined;
-
-    if (title !== undefined && text !== undefined && _id !== undefined && isArchived !== undefined)
-      result = { title, text, _id, isArchived };
-  }
-
-  return result;
-};
-
-export const getNotesDb = (value: any) => checkArray(value, getNoteDbOrUdf);

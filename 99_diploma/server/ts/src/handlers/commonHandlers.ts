@@ -21,3 +21,7 @@ export const handleAuthSuccess = (res: Response, code: number, message?: string)
     }).toString(),
   );
 };
+
+export const handleApiError = (res: Response, code: number, message?: string) => {
+  res.status(code).send(message);
+};

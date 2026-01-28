@@ -5,7 +5,7 @@ import nunjucks from "nunjucks";
 import { ORIGIN, PORT, ROUTES } from "./src/constants.js";
 import { rootRouter } from "./src/routes/root.js";
 import { apiRouter } from "./src/routes/api.js";
-import { configTable } from "./src/fns/pg.js";
+import { configNotes } from "./src/fns/pg.js";
 import { configUsers } from "./src/fns/users.js";
 import { configSessions } from "./src/fns/sessions.js";
 
@@ -26,8 +26,8 @@ app.use(ROUTES.root, rootRouter);
 app.listen(PORT, async () => {
   const isUsers = await configUsers();
   const isSessions = await configSessions();
-  const isNodes = await configTable();
+  const isNotes = await configNotes();
 
-  if (isSessions && isNodes && isUsers) console.log(`Listening on ${ORIGIN}`);
+  if (isUsers && isSessions && isNotes) console.log(`Listening on ${ORIGIN}`);
   else process.exit(1);
 });
