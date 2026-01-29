@@ -60,17 +60,17 @@ export const ROUTES = {
 } as const;
 
 export const ENDPOINTS = {
-  archive: `/archive/:id`,
+  archive: `/:id/archive`,
   create: "/create",
-  delete: "/delete/:id",
+  delete: "/:id/delete",
   edit: "/edit",
   list: "/list",
   login: "/login",
   logout: "/logout",
   purge: "/purge",
   signup: "/signup",
-  unarchive: `/unarchive/:id`,
-  view: "/view/:id",
+  unarchive: `/:id/unarchive`,
+  view: "/:id/view",
 } as const;
 
 export const COOKIES = {

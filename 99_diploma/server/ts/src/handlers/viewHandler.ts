@@ -17,7 +17,7 @@ export const handleView = async (req: Request, res: Response) => {
       const note = await getNote(id, user);
       if (note) {
         const html = markdownit().render(note.text);
-        res.status(200).json({ title: note.title, isArchived: note.isArchived, html });
+        res.status(200).json({ title: note.title, text: note.text, isArchived: note.isArchived, html });
       } else handleApiError(res, 500, ERRORS.somethingWrong);
     } else handleApiError(res, 400, ERRORS.badRequest);
   }

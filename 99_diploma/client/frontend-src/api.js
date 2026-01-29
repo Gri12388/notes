@@ -42,11 +42,11 @@ export const createNote = (title, text) =>
     },
   });
 
-export const getNote = (id) => req(`/view/${id}`);
+export const getNote = (id) => req(`/${id}/view`);
 
-export const archiveNote = (id) => req(`/archive/${id}`);
+export const archiveNote = (id) => req(`/${id}/archive`);
 
-export const unarchiveNote = (id) => req(`/unarchive/${id}`);
+export const unarchiveNote = (id) => req(`/${id}/unarchive`);
 
 export const editNote = (id, title, text) =>
   req("/edit", {
@@ -58,7 +58,7 @@ export const editNote = (id, title, text) =>
     },
   });
 
-export const deleteNote = (id) => req(`/delete/${id}`);
+export const deleteNote = (id) => req(`/${id}/delete`);
 
 export const deleteAllArchived = () => req(`/purge`);
 

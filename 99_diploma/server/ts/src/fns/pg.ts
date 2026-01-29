@@ -146,12 +146,10 @@ export const editNote = async (payload: Note) => {
     const db = Pg.getInstance().getPg();
 
     const { id, title, text } = payload;
-    const now = Date.now();
 
     await db(TABLES.notes).withSchema(SCHEMA.public).where({ id }).update({
       title,
       text,
-      edited_at: now,
     });
     result = true;
   } catch (error) {
