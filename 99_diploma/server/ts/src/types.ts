@@ -13,6 +13,11 @@ export type Session = {
   expire: number;
 };
 
+export type SessionDb = {
+  user: string;
+  expire: string;
+};
+
 export type Dictionary<T> = {
   name: string;
   value: T;
@@ -35,6 +40,15 @@ export type Note = {
   createdAt: number;
 };
 
+export type NoteDb = {
+  id: number;
+  user: string;
+  title: string;
+  text: string;
+  is_archived: boolean;
+  created_at: string;
+};
+
 export type Age = typeof AGE.allTime | typeof AGE.archive | typeof AGE.oneMonth | typeof AGE.threeMonth;
 
 export type AgeData = {
@@ -46,4 +60,15 @@ export type List = {
   age: Age;
   search: string;
   page: number;
+};
+
+export type Create = {
+  title: string;
+  text: string;
+};
+
+export type Edit = {
+  id: string;
+  title: string;
+  text: string;
 };

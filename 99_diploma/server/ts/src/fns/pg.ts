@@ -1,9 +1,9 @@
 import { Pg } from "../classes/Pg.js";
 import { LIMIT, SCHEMA, TABLES } from "../constants.js";
-import type { List, Note } from "../types.js";
-import { checkNumber } from "./checkers.js";
+import type { Create, Edit, List, Note } from "../types.js";
+import { checkArray, checkNoteDb, checkNumber } from "./checkers.js";
 import { getAgeData, getOffset } from "./common.js";
-import { makeNote, makeNotes } from "./makers.js";
+import { mapNote } from "./mappers.js";
 
 export const configNotes = async () => {
   let result = false;
@@ -44,7 +44,7 @@ export const selectNotes = async (payload: List, userName: string) => {
     const offset = getOffset(page);
     const sql = db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("id", "title", "text", "is_archived", "created_at")
+      .select("id", "user", "title", "text", "is_archived", "created_at")
       .where("user", userName)
       .andWhere("is_archived", isArchived)
       .andWhere("created_at", ">", timestamp);
@@ -54,7 +54,13 @@ export const selectNotes = async (payload: List, userName: string) => {
     }
 
     const rows = await sql.offset(offset).limit(LIMIT + 1);
-    result = makeNotes(rows);
+    const notes = checkArray(rows, checkNoteDb).reduce<Note[]>((acc, item) => {
+      const note = mapNote(item);
+      if (note) acc.push(note);
+      return acc;
+    }, []);
+
+    result = notes;
   } catch (error) {
     console.log("[error]", error);
   }
@@ -77,7 +83,7 @@ export const archiveNote = async (id: string) => {
   return result;
 };
 
-export const createNote = async (payload: Note, userName: string) => {
+export const createNote = async (payload: Create, userName: string) => {
   let result = "";
 
   try {
@@ -139,7 +145,7 @@ export const deleteNote = async (id: string) => {
   return result;
 };
 
-export const editNote = async (payload: Note) => {
+export const editNote = async (payload: Edit) => {
   let result = false;
 
   try {
@@ -167,12 +173,12 @@ export const getNote = async (id: string, userName: string) => {
 
     const rows = await db(TABLES.notes)
       .withSchema(SCHEMA.public)
-      .select("id", "title", "text", "is_archived", "created_at")
+      .select("id", "user", "title", "text", "is_archived", "created_at")
       .where("user", userName)
       .andWhere("id", id);
 
     if (rows.length > 0) {
-      const note = makeNote(rows[0]);
+      const note = mapNote(checkNoteDb(rows[0]));
       if (note) result = note;
     }
   } catch (error) {

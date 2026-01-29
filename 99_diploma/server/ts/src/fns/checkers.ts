@@ -1,5 +1,5 @@
 import { AGE } from "../constants.js";
-import type { List, Session, Note } from "../types.js";
+import type { List, Session, SessionDb, NoteDb, Create, Edit } from "../types.js";
 import { isInt } from "./common.js";
 
 export const checkString = (value: any) => (typeof value === "string" ? value : undefined);
@@ -30,6 +30,19 @@ export const checkSession = (value: unknown) => {
   if (typeof value === "object" && value !== null) {
     const user = "user" in value ? checkString(value.user) : undefined;
     const expire = "expire" in value ? checkNumber(value.expire) : undefined;
+
+    if (user !== undefined && expire !== undefined) result = { user, expire };
+  }
+
+  return result;
+};
+
+export const checkSessionDb = (value: unknown) => {
+  let result: SessionDb | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const user = "user" in value ? checkString(value.user) : undefined;
+    const expire = "expire" in value ? checkString(value.expire) : undefined;
 
     if (user !== undefined && expire !== undefined) result = { user, expire };
   }
@@ -70,26 +83,53 @@ export const checkList = (value: any) => {
   return result;
 };
 
-export const checkNote = (value: any) => {
-  let result: Note | undefined;
+export const checkNoteDb = (value: any) => {
+  let result: NoteDb | undefined;
 
   if (typeof value === "object" && value !== null) {
     const id = "id" in value ? checkNumber(value.id) : undefined;
     const user = "user" in value ? checkString(value.user) : undefined;
     const title = "title" in value ? checkString(value.title) : undefined;
     const text = "text" in value ? checkString(value.text) : undefined;
-    const isArchived = "isArchived" in value ? checkBoolean(value.isArchived) : undefined;
-    const createdAt = "created_at" in value ? checkNumber(value.created_at) : undefined;
+    const is_archived = "is_archived" in value ? checkBoolean(value.is_archived) : undefined;
+    const created_at = "created_at" in value ? checkString(value.created_at) : undefined;
 
-    if (title !== undefined && text !== undefined)
-      result = {
-        id: id ? id.toString() : "",
-        user: user ?? "",
-        title,
-        text,
-        isArchived: isArchived ?? false,
-        createdAt: createdAt ?? 0,
-      };
+    if (
+      id !== undefined &&
+      user !== undefined &&
+      title !== undefined &&
+      text !== undefined &&
+      is_archived !== undefined &&
+      created_at !== undefined
+    )
+      result = { id, user, title, text, is_archived, created_at };
+  }
+
+  return result;
+};
+
+export const checkCreate = (value: any) => {
+  let result: Create | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const title = "title" in value ? checkString(value.title) : undefined;
+    const text = "text" in value ? checkString(value.text) : undefined;
+
+    if (title !== undefined && text !== undefined) result = { title, text };
+  }
+
+  return result;
+};
+
+export const checkEdit = (value: any) => {
+  let result: Edit | undefined;
+
+  if (typeof value === "object" && value !== null) {
+    const id = "id" in value ? checkString(value.id) : undefined;
+    const title = "title" in value ? checkString(value.title) : undefined;
+    const text = "text" in value ? checkString(value.text) : undefined;
+
+    if (id !== undefined && title !== undefined && text !== undefined) result = { id, title, text };
   }
 
   return result;

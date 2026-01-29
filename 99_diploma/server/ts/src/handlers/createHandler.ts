@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { getUser } from "../fns/getUser.js";
-import { checkNote } from "../fns/checkers.js";
+import { checkCreate } from "../fns/checkers.js";
 import { createNote } from "../fns/pg.js";
 import { handleApiError } from "./commonHandlers.js";
 import { ERRORS } from "../constants.js";
@@ -10,7 +10,7 @@ export const handleCreate = async (req: Request, res: Response) => {
 
   if (user) {
     const { body } = req;
-    const payload = checkNote(body);
+    const payload = checkCreate(body);
 
     if (payload) {
       const id = await createNote(payload, user);

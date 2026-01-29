@@ -3,8 +3,8 @@ import { Pg } from "../classes/Pg.js";
 import { NOT_FOUND, NOTHING, PGERRORS, SCHEMA, TABLES, UNIQUE_VIOLATION } from "../constants.js";
 import { locale } from "../locale.js";
 import type { Session } from "../types.js";
-import { checkNumber } from "./checkers.js";
-import { makeSession } from "./makers.js";
+import { checkNumber, checkSessionDb } from "./checkers.js";
+import { mapSession } from "./mappers.js";
 
 export const configSessions = async () => {
   let result = false;
@@ -72,8 +72,10 @@ export const findSession = async (id: string) => {
 
     const rows = await db(TABLES.sessions).withSchema(SCHEMA.public).select("user", "expire").where("id", id);
 
-    if (rows.length > 0) result = makeSession(rows[0]) ?? NOTHING;
-    else result = NOT_FOUND;
+    if (rows.length > 0) {
+      const sessionDb = checkSessionDb(rows[0]);
+      result = mapSession(sessionDb) ?? NOTHING;
+    } else result = NOT_FOUND;
   } catch (error) {
     console.error(`[error]: ${error}`);
   }
