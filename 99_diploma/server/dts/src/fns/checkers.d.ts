@@ -1,0 +1,14 @@
+import type { List, Session, SessionDb, NoteDb, Create, Edit } from "../types.js";
+export declare const checkString: (value: any) => string | undefined;
+export declare const checkNumber: (value: any) => number | undefined;
+export declare const checkBoolean: (value: any) => boolean | undefined;
+export declare const checkInt: (value: string) => number | undefined;
+export declare const checkRecord: (value: any) => Record<string, any> | undefined;
+export declare const checkArray: <T>(value: unknown, checker: (value: unknown) => T | undefined) => T[];
+export declare const checkSession: (value: unknown) => Session | undefined;
+export declare const checkSessionDb: (value: unknown) => SessionDb | undefined;
+export declare const getAgeOrUdf: (value: any) => "alltime" | "archive" | "1month" | "3month" | undefined;
+export declare const checkList: (value: any) => List | undefined;
+export declare const checkNoteDb: (value: any) => NoteDb | undefined;
+export declare const checkCreate: (value: any) => Create | undefined;
+export declare const checkEdit: (value: any) => Edit | undefined;

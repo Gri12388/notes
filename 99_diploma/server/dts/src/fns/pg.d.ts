@@ -1,0 +1,10 @@
+import type { Create, Edit, List, Note } from "../types.js";
+export declare const configNotes: () => Promise<boolean>;
+export declare const selectNotes: (payload: List, userName: string) => Promise<Note[] | undefined>;
+export declare const archiveNote: (id: string) => Promise<boolean>;
+export declare const createNote: (payload: Create, userName: string) => Promise<string>;
+export declare const deleteArchived: (user: string) => Promise<boolean>;
+export declare const deleteNote: (id: string) => Promise<boolean>;
+export declare const editNote: (payload: Edit) => Promise<boolean>;
+export declare const getNote: (id: string, userName: string) => Promise<Note | undefined>;
+export declare const unarchiveNote: (id: string) => Promise<boolean>;

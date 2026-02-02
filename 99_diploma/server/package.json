@@ -6,8 +6,9 @@
   "keywords": [],
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "build": "rm -r src dts index.js index.js.map && npx tsc || npx tsc",
     "dev": "tsx watch ts/index.ts",
+    "start": "node index.js",
     "migrate": "npx knex migrate:latest --knexfile knexfile.cjs"
   },
   "engines": {

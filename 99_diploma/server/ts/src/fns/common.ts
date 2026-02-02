@@ -1,17 +1,8 @@
 import { createHash } from "crypto";
 import { subMonths } from "date-fns";
-import type { MongoClient } from "mongodb";
 import type { Age, AgeData, Creds, UrlOptions } from "../types.js";
 import { checkRecord, checkString } from "./checkers.js";
 import { AGE } from "../constants.js";
-
-export const getCollection = async (mongo: MongoClient, dbName: string, collectionName: string) => {
-  const client = await mongo.connect();
-  const db = client.db(dbName);
-  const collection = db.collection(collectionName);
-
-  return collection;
-};
 
 export const hashText = (text: string) => createHash("sha256").update(text).digest("hex");
 
