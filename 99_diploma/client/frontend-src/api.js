@@ -62,4 +62,29 @@ export const deleteNote = (id) => req(`/${id}/delete`);
 
 export const deleteAllArchived = () => req(`/purge`);
 
-export const notePdfUrl = (id) => {};
+export const notePdfUrl = async (id) => {
+  const url = `/${id}/pdf`;
+  const data = await fetch(PREFIX + url);
+  const contentDisposition = data.headers.get("content-disposition");
+  const parts = contentDisposition.split("=");
+  const fileName = parts[1] ?? "Pdf_file";
+  const title = decodeURI(fileName);
+  const buffer = await data.arrayBuffer();
+  const blob = new Blob([buffer], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = title;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+
+  // fetch();
+  // await req(`/${id}/pdf`);
+  // const { link } = await req(`/${id}/pdf`);
+  // const downloadLink = document.createElement("a");
+  // downloadLink.href = link;
+
+  // downloadLink.download = link;
+  // downloadLink.click();
+};

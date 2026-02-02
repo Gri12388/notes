@@ -8,21 +8,24 @@ import { handleCreate } from "../handlers/createHandler.js";
 import { handleEdit } from "../handlers/editHandler.js";
 import { handleUnarchive } from "../handlers/unarchiveHandler.js";
 import { handleView } from "../handlers/viewHandler.js";
+import { handlePdf } from "../handlers/pdfHandler.js";
 
 export const apiRouter = express.Router();
 
 apiRouter.get(ENDPOINTS.archive, handleArchive);
 
-apiRouter.get(ENDPOINTS.purge, handlePurge);
+apiRouter.post(ENDPOINTS.create, express.json(), handleCreate);
 
 apiRouter.get(ENDPOINTS.delete, handleDelete);
-
-apiRouter.post(ENDPOINTS.create, express.json(), handleCreate);
 
 apiRouter.post(ENDPOINTS.edit, express.json(), handleEdit);
 
 apiRouter.post(ENDPOINTS.list, express.json(), handleList);
 
-apiRouter.get(ENDPOINTS.unarchive, handleUnarchive);
+apiRouter.get(ENDPOINTS.pdf, handlePdf);
+
+apiRouter.get(ENDPOINTS.purge, handlePurge);
 
 apiRouter.get(ENDPOINTS.view, express.json(), handleView);
+
+apiRouter.get(ENDPOINTS.unarchive, handleUnarchive);

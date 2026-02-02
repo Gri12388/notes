@@ -1,7 +1,9 @@
 import express from "express";
-
+import cors from "cors";
+import path from "path";
 import cookieParser from "cookie-parser";
 import nunjucks from "nunjucks";
+
 import { ORIGIN, PORT, ROUTES } from "./src/constants.js";
 import { rootRouter } from "./src/routes/root.js";
 import { apiRouter } from "./src/routes/api.js";
@@ -10,6 +12,7 @@ import { configUsers } from "./src/fns/users.js";
 import { configSessions } from "./src/fns/sessions.js";
 
 const app = express();
+const corsConfig = { exposedHeaders: "Content-Disposition" };
 
 nunjucks.configure("views", {
   autoescape: true,
@@ -17,8 +20,11 @@ nunjucks.configure("views", {
 });
 
 app.set("view engine", "njk");
-app.use(express.static("public"));
+app.use(cors(corsConfig));
 app.use(cookieParser());
+
+// console.log("path", path.resolve("public"));
+app.use(express.static(path.resolve("public")));
 
 app.use(ROUTES.api, apiRouter);
 app.use(ROUTES.root, rootRouter);

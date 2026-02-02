@@ -5,8 +5,9 @@ import { getNote } from "../fns/pg.js";
 import { handleApiError } from "./commonHandlers.js";
 import { ERRORS } from "../constants.js";
 import { getHtml } from "../services/mdService.js";
+import { getPdf } from "../services/pdfService.js";
 
-export const handleView = async (req: Request, res: Response) => {
+export const handlePdf = async (req: Request, res: Response) => {
   const user = await getUser(req, res);
 
   if (user) {
@@ -16,8 +17,15 @@ export const handleView = async (req: Request, res: Response) => {
     if (id) {
       const note = await getNote(id, user);
       if (note) {
-        const html = getHtml(note.text);
-        res.status(200).json({ id: note.id, title: note.title, text: note.text, isArchived: note.isArchived, html });
+        const { text, title } = note;
+        const encodedTitle = encodeURI(title);
+        const html = getHtml(text);
+        const pdf = await getPdf(html);
+        if (pdf) {
+          res
+            .set({ "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename=${encodedTitle}` })
+            .end(pdf);
+        } else handleApiError(res, 500, ERRORS.somethingWrong);
       } else handleApiError(res, 500, ERRORS.somethingWrong);
     } else handleApiError(res, 400, ERRORS.badRequest);
   }
