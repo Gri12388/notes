@@ -8,8 +8,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "tsx watch ts/index.ts",
-    "test": "echo \"Tests passed\" && exit 0",
-    "build:client": "rimraf public/bundle.* && rollup --config"
+    "migrate": "npx knex migrate:latest --knexfile knexfile.cjs"
   },
   "engines": {
     "node": "=12.x || =14.x || =15.x"
