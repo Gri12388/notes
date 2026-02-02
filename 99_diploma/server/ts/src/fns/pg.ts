@@ -50,7 +50,7 @@ export const selectNotes = async (payload: List, userName: string) => {
       .andWhere("created_at", ">", timestamp);
 
     if (search) {
-      sql.andWhere("title", "ilike", `%${search}%`).orWhere("text", "ilike", `%${search}%`);
+      sql.andWhere("title", "ilike", `%${search}%`);
     }
 
     const rows = await sql.offset(offset).limit(LIMIT + 1);
