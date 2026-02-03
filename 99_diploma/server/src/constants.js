@@ -54,7 +54,6 @@ export const ENDPOINTS = {
     list: "/list",
     login: "/login",
     logout: "/logout",
-    pdf: "/:id/pdf",
     purge: "/purge",
     signup: "/signup",
     unarchive: `/:id/unarchive`,

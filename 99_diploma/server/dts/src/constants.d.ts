@@ -55,7 +55,6 @@ export declare const ENDPOINTS: {
     readonly list: "/list";
     readonly login: "/login";
     readonly logout: "/logout";
-    readonly pdf: "/:id/pdf";
     readonly purge: "/purge";
     readonly signup: "/signup";
     readonly unarchive: "/:id/unarchive";

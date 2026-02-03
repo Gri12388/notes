@@ -8,7 +8,6 @@ import { handleCreate } from "../handlers/createHandler.js";
 import { handleEdit } from "../handlers/editHandler.js";
 import { handleUnarchive } from "../handlers/unarchiveHandler.js";
 import { handleView } from "../handlers/viewHandler.js";
-import { handlePdf } from "../handlers/pdfHandler.js";
 
 export const apiRouter = express.Router();
 
@@ -21,8 +20,6 @@ apiRouter.get(ENDPOINTS.delete, handleDelete);
 apiRouter.post(ENDPOINTS.edit, express.json(), handleEdit);
 
 apiRouter.post(ENDPOINTS.list, express.json(), handleList);
-
-apiRouter.get(ENDPOINTS.pdf, handlePdf);
 
 apiRouter.get(ENDPOINTS.purge, handlePurge);
 
